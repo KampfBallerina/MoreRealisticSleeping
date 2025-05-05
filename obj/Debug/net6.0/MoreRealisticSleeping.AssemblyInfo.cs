@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MoreRealisticSleeping")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06a645dfa343eb0c6890a472c1e0940046dc2d79")]
 [assembly: System.Reflection.AssemblyProductAttribute("MoreRealisticSleeping")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MoreRealisticSleeping")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
