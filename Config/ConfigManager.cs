@@ -30,7 +30,6 @@ namespace MoreRealisticSleeping.Config
                 MRSCore.Instance.StopAllCoroutines();
                 ConfigManager.Save(configState);
                 result = configState;
-                MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
             }
             else
             {
@@ -46,6 +45,8 @@ namespace MoreRealisticSleeping.Config
                     EnsureFieldExists((object)jsonObject, "SleepSettings", configState.SleepSettings);
                     EnsureFieldExists((object)jsonObject.SleepSettings, "Enable_Forced_Sleep", configState.SleepSettings.Enable_Forced_Sleep);
                     EnsureFieldExists((object)jsonObject.SleepSettings, "Cooldown_Time", configState.SleepSettings.Cooldown_Time);
+                    EnsureFieldExists((object)jsonObject.SleepSettings, "Forced_Sleep_Delay", configState.SleepSettings.Forced_Sleep_Delay);
+                    EnsureFieldExists((object)jsonObject.SleepSettings, "Auto_Skip_Daily_Summary", configState.SleepSettings.Auto_Skip_Daily_Summary);
                     EnsureFieldExists((object)jsonObject.SleepSettings, "Enable_Positive_Effects", configState.SleepSettings.Enable_Positive_Effects);
                     EnsureFieldExists((object)jsonObject.SleepSettings, "Positive_Effects_Probability", configState.SleepSettings.Positive_Effects_Probability);
                     EnsureFieldExists((object)jsonObject.SleepSettings, "Positive_Effects_Duration", configState.SleepSettings.Positive_Effects_Duration);
@@ -124,10 +125,8 @@ namespace MoreRealisticSleeping.Config
                     // Speichere die aktualisierte Konfiguration, falls Änderungen vorgenommen wurden
                     if (isConfigUpdated)
                     {
-                        MRSCore.Instance.StopAllCoroutines();
                         ConfigManager.Save(loadedConfigState);
                         isConfigUpdated = false; // Reset after saving
-                        MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
                     }
                     result = loadedConfigState;
                 }
@@ -220,6 +219,7 @@ namespace MoreRealisticSleeping.Config
 
         public static void Save(ConfigState config)
         {
+            MRSCore.Instance.StopAllCoroutines();
             try
             {
                 string contents = JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented);
@@ -230,6 +230,7 @@ namespace MoreRealisticSleeping.Config
             {
                 MelonLogger.Error("Failed to save MoreRealisticSleeping config: " + ex.Message);
             }
+            MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
         }
         private static void ValidateSleepSettings(ConfigState loadedConfigState, ConfigState configState, ref bool isConfigUpdated)
         {
@@ -241,11 +242,28 @@ namespace MoreRealisticSleeping.Config
                 isConfigUpdated = true;
             }
 
+
             // Check if Cooldown Time is a float
             if (loadedConfigState.SleepSettings.Cooldown_Time < 59f || loadedConfigState.SleepSettings.Cooldown_Time > 600f)
             {
                 MelonLogger.Warning("Invalid Cooldown_Time in config. Needs to be >= 60sec and <= 600. Adding default value (500sec).");
                 loadedConfigState.SleepSettings.Cooldown_Time = configState.SleepSettings.Cooldown_Time;
+                isConfigUpdated = true;
+            }
+
+            // Check if Force Sleep Delay is a float
+            if (loadedConfigState.SleepSettings.Forced_Sleep_Delay < 0f || loadedConfigState.SleepSettings.Forced_Sleep_Delay > 1000f)
+            {
+                MelonLogger.Warning("Invalid Forced_Sleep_Delay in config. Needs to be >= 0sec and <= 1000sec. Adding default value (0sec).");
+                loadedConfigState.SleepSettings.Forced_Sleep_Delay = configState.SleepSettings.Forced_Sleep_Delay;
+                isConfigUpdated = true;
+            }
+
+            // Check if Force Instant Continue is a boolean
+            if (loadedConfigState.SleepSettings.Auto_Skip_Daily_Summary != true && loadedConfigState.SleepSettings.Auto_Skip_Daily_Summary != false)
+            {
+                MelonLogger.Warning("Invalid Force_Instant_Continue in config. Adding default value (false).");
+                loadedConfigState.SleepSettings.Auto_Skip_Daily_Summary = configState.SleepSettings.Auto_Skip_Daily_Summary;
                 isConfigUpdated = true;
             }
 

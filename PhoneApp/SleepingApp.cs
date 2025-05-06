@@ -787,6 +787,8 @@ namespace MoreRealisticSleeping.PhoneApp
 
             SetCheckboxValue(generalSettingsObject.transform, "Forced Sleep", MRSCore.Instance.config.SleepSettings.Enable_Forced_Sleep);
             SetInputFieldValue(generalSettingsObject.transform, "Cooldown Time", MRSCore.Instance.config.SleepSettings.Cooldown_Time);
+            SetInputFieldValue(generalSettingsObject.transform, "Forced Sleep Delay", MRSCore.Instance.config.SleepSettings.Forced_Sleep_Delay);
+            SetCheckboxValue(generalSettingsObject.transform, "Auto Skip Daily Summary", MRSCore.Instance.config.SleepSettings.Auto_Skip_Daily_Summary);
             SetCheckboxValue(generalSettingsObject.transform, "Positive Effects", MRSCore.Instance.config.SleepSettings.Enable_Positive_Effects);
             SetInputFieldValue(generalSettingsObject.transform, "Positive Effects Duration", MRSCore.Instance.config.SleepSettings.Positive_Effects_Duration);
             SetInputFieldValue(generalSettingsObject.transform, "Positive Effects Probability", MRSCore.Instance.config.SleepSettings.Positive_Effects_Probability);
@@ -1203,6 +1205,20 @@ namespace MoreRealisticSleeping.PhoneApp
                     MelonLogger.Warning($"Cooldown Time was < 60. Applying '500 seconds' as value.");
                 }
             }
+            else if (labelText == "Forced Sleep Delay")
+            {
+                // Überprüfe, ob die Eingabe leer ist oder kleiner als 60
+                if (string.IsNullOrEmpty(input) || int.TryParse(input, out int parsedValue) && (parsedValue < 0 || parsedValue > 1000))
+                {
+                    inputFieldComponent.text = "0";
+                    if (MRSCore.Instance.notificationsManager != null)
+                    {
+                        subTitleString = $"Has to be <color=#329AC5>0 to 1000 seconds</color>";
+                        MRSCore.Instance.notificationsManager.SendNotification("Forced Sleep Delay", subTitleString, appIconSprite, 3, true);
+                    }
+                    MelonLogger.Warning($"Forced Sleep Delay was < 0 or > 1000. Applying '0 seconds' as value.");
+                }
+            }
             else if (labelText == "Positive Effects Duration")
             {
                 // Überprüfe, ob die Eingabe leer ist oder kleiner als 60
@@ -1390,18 +1406,30 @@ namespace MoreRealisticSleeping.PhoneApp
             MRSCore.Instance.StopAllCoroutines();
 
             // Greife auf die Eingabefelder zu und speichere die Werte
+            Transform sleepDelayInputTransform = generalSetttingsTransform.Find("Forced Sleep Delay Horizontal Container/Forced Sleep Delay Input");
             Transform cooldownInputTransform = generalSetttingsTransform.Find("Cooldown Time Horizontal Container/Cooldown Time Input");
             Transform posEffectDurationInputTransform = generalSetttingsTransform.Find("Positive Effects Duration Horizontal Container/Positive Effects Duration Input");
             Transform posEffectProbabilityInputTransform = generalSetttingsTransform.Find("Positive Effects Probability Horizontal Container/Positive Effects Probability Input");
             Transform negEffectDurationInputTransform = generalSetttingsTransform.Find("Negative Effects Duration Horizontal Container/Negative Effects Duration Input");
             Transform negEffectProbabilityInputTransform = generalSetttingsTransform.Find("Negative Effects Probability Horizontal Container/Negative Effects Probability Input");
 
+            float currentSleepDelay = MRSCore.Instance.config.SleepSettings.Forced_Sleep_Delay;
             float currentCooldownTime = MRSCore.Instance.config.SleepSettings.Cooldown_Time;
             float currentPosEffectDuration = MRSCore.Instance.config.SleepSettings.Positive_Effects_Duration;
             float currentPosEffectProbability = MRSCore.Instance.config.SleepSettings.Positive_Effects_Probability;
             float currentNegEffectDuration = MRSCore.Instance.config.SleepSettings.Negative_Effects_Duration;
             float currentNegEffectProbability = MRSCore.Instance.config.SleepSettings.Negative_Effects_Probability;
 
+            // Aktualisiere Forced Sleep Delay
+            if (sleepDelayInputTransform != null)
+            {
+                InputField sleepDelayInputField = sleepDelayInputTransform.GetComponent<InputField>();
+                if (sleepDelayInputField != null && float.TryParse(sleepDelayInputField.text, out float parsedSleepDelay))
+                {
+                    currentSleepDelay = parsedSleepDelay;
+                }
+            }
+            MRSCore.Instance.config.SleepSettings.Forced_Sleep_Delay = currentSleepDelay;
 
             // Aktualisiere Cooldown Time
             if (cooldownInputTransform != null)
@@ -1463,6 +1491,9 @@ namespace MoreRealisticSleeping.PhoneApp
             bool isForcedSleepChecked = generalSettingsObject.transform.Find("Forced Sleep Checkbox").GetComponent<Toggle>().isOn;
             MRSCore.Instance.config.SleepSettings.Enable_Forced_Sleep = isForcedSleepChecked;
 
+            bool isAutoSkipChecked = generalSettingsObject.transform.Find("Auto Skip Daily Summary Checkbox").GetComponent<Toggle>().isOn;
+            MRSCore.Instance.config.SleepSettings.Auto_Skip_Daily_Summary = isAutoSkipChecked;
+
             bool isPositiveEffectsChecked = generalSettingsObject.transform.Find("Positive Effects Checkbox").GetComponent<Toggle>().isOn;
             MRSCore.Instance.config.SleepSettings.Enable_Positive_Effects = isPositiveEffectsChecked;
 
@@ -1506,7 +1537,7 @@ namespace MoreRealisticSleeping.PhoneApp
                 MRSCore.Instance.notificationsManager.SendNotification("General Settings", subTitleString, notificationSprite, 5, true);
             }
 
-            MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
+           // MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
 
             // Reaktiviere den Save-Button
             if (saveButton != null)
@@ -1571,14 +1602,20 @@ namespace MoreRealisticSleeping.PhoneApp
             Transform enableForcedSleepCheckboxTextTransform = enableForcedSleepCheckbox.transform.Find("Text");
             enableForcedSleepCheckboxTextTransform.GetComponent<Text>().text = "Enable Forced Sleep";
 
-            AddLabelInputPair("Cooldown Time", generalSettingsObject.transform, "s"); // Add the label and input field pair
+            GameObject enableAutoSleepCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, generalSettingsObject.transform);
+            enableAutoSleepCheckbox.name = "Auto Skip Daily Summary Checkbox";
+            Transform enableAutoSleepCheckboxTextTransform = enableAutoSleepCheckbox.transform.Find("Text");
+            enableAutoSleepCheckboxTextTransform.GetComponent<Text>().text = "Auto Skip Daily Summary";
+
+            AddLabelInputPair("Forced Sleep Delay", generalSettingsObject.transform, "s");
+            AddLabelInputPair("Cooldown Time", generalSettingsObject.transform, "s");
 
             GameObject posEffectsCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, generalSettingsObject.transform);
             posEffectsCheckbox.name = "Positive Effects Checkbox";
             Transform posEffectsCheckboxTextTransform = posEffectsCheckbox.transform.Find("Text");
             posEffectsCheckboxTextTransform.GetComponent<Text>().text = "Enable Positive Effects";
 
-            AddLabelInputPair("Positive Effects Duration", generalSettingsObject.transform, "s"); // Add the label and input field pair
+            AddLabelInputPair("Positive Effects Duration", generalSettingsObject.transform, "s");
             AddLabelInputPair("Positive Effects Probability", generalSettingsObject.transform, "%");
 
             GameObject negEffectsCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, generalSettingsObject.transform);
@@ -1586,8 +1623,8 @@ namespace MoreRealisticSleeping.PhoneApp
             Transform negEffectsCheckboxTextTransform = negEffectsCheckbox.transform.Find("Text");
             negEffectsCheckboxTextTransform.GetComponent<Text>().text = "Enable Negative Effects";
 
-            AddLabelInputPair("Negative Effects Duration", generalSettingsObject.transform, "s"); // Add the label and input field pair
-            AddLabelInputPair("Negative Effects Probability", generalSettingsObject.transform, "%"); // Add the label and input field pair
+            AddLabelInputPair("Negative Effects Duration", generalSettingsObject.transform, "s");
+            AddLabelInputPair("Negative Effects Probability", generalSettingsObject.transform, "%");
 
             GameObject notificationsCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, generalSettingsObject.transform);
             notificationsCheckbox.name = "Notifications Checkbox";
@@ -1807,7 +1844,7 @@ namespace MoreRealisticSleeping.PhoneApp
                 MRSCore.Instance.notificationsManager.SendNotification("Positive Effects", subTitleString, notificationSprite, 5, true);
             }
 
-            MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
+         //   MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
 
             // Reaktiviere den Save-Button
             if (saveButton != null)
@@ -2185,7 +2222,7 @@ namespace MoreRealisticSleeping.PhoneApp
                 MRSCore.Instance.notificationsManager.SendNotification("Negative Effects", subTitleString, notificationSprite, 5, true);
             }
 
-            MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
+           // MRSCore.Instance.monitorTimeForSleepCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.Instance.MonitorTimeForSleep());
 
             // Reaktiviere den Save-Button
             if (saveButton != null)

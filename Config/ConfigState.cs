@@ -14,6 +14,9 @@ namespace MoreRealisticSleeping.Config
         public bool Enable_Forced_Sleep = true;
         [JsonConverter(typeof(CleanFloatConverter))]
         public float Cooldown_Time = 500f; // Cooldown time in seconds
+        [JsonConverter(typeof(CleanFloatConverter))]
+        public float Forced_Sleep_Delay = 0f; // Delay starting at 4AM, until the player is actually forces to sleep
+        public bool Auto_Skip_Daily_Summary = false; // Forces the player to sleep instantly and press continue to skip the night
         public bool Enable_Positive_Effects = true;
         [JsonConverter(typeof(CleanFloatConverter))]
         public float Positive_Effects_Probability = 25f; // Probability of getting a positive effect

@@ -8,6 +8,9 @@ using UnityEngine;
 using System.Collections;
 using Il2CppLiquidVolumeFX;
 using MelonLoader.Utils;
+using Il2CppScheduleOne.Networking;
+using Il2CppFluffyUnderware.DevTools.Extensions;
+using Il2CppJetBrains.Annotations;
 
 public class PropertyManager
 {
@@ -259,117 +262,152 @@ public class PropertyManager
         {
             case "antigravitiy":
             case "anti_gravity":
-                antiGravity.ClearFromPlayer(player);
+                if (antiGravity == null) antiGravity = new AntiGravity();
+                if (antiGravity != null) antiGravity.ClearFromPlayer(player);
                 break;
             case "athletic":
-                athletic.ClearFromPlayer(player);
+                if (athletic == null) athletic = new Athletic();
+                if (athletic != null) athletic.ClearFromPlayer(player);
                 break;
             case "balding":
-                balding.ClearFromPlayer(player);
+                if (balding == null) balding = new Balding();
+                if (balding != null) balding.ClearFromPlayer(player);
                 break;
             case "brighteyed":
             case "bright_eyed":
-                brightEyed.ClearFromPlayer(player);
+                if (brightEyed == null) brightEyed = new BrightEyed();
+                if (brightEyed != null) brightEyed.ClearFromPlayer(player);
                 break;
             case "calming":
-                calming.ClearFromPlayer(player);
+                if (calming == null) calming = new Calming();
+                if (calming != null) calming.ClearFromPlayer(player);
                 break;
             case "caloriedense":
             case "calorie_dense":
-                calorieDense.ClearFromPlayer(player);
+                if (calorieDense == null) calorieDense = new CalorieDense();
+                if (calorieDense != null) calorieDense.ClearFromPlayer(player);
                 break;
             case "cyclopean":
-                cyclopean.ClearFromPlayer(player);
+                if (cyclopean == null) cyclopean = new Cyclopean();
+                if (cyclopean != null) cyclopean.ClearFromPlayer(player);
                 break;
             case "disorienting":
-                disorienting.ClearFromPlayer(player);
+                if (disorienting == null) disorienting = new Disorienting();
+                if (disorienting != null) disorienting.ClearFromPlayer(player);
                 break;
             case "electrifying":
-                electrifying.ClearFromPlayer(player);
+                if (electrifying == null) electrifying = new Electrifying();
+                if (electrifying != null) electrifying.ClearFromPlayer(player);
                 break;
             case "energizing":
-                energizing.ClearFromPlayer(player);
+                if (energizing == null) energizing = new Energizing();
+                if (energizing != null) energizing.ClearFromPlayer(player);
                 break;
             case "euphoric":
-                euphoric.ClearFromPlayer(player);
+                if (euphoric == null) euphoric = new Euphoric();
+                if (euphoric != null) euphoric.ClearFromPlayer(player);
                 break;
             case "explosive":
-                explosive.ClearFromPlayer(player);
+                if (explosive == null) explosive = new Explosive();
+                if (explosive != null) explosive.ClearFromPlayer(player);
                 break;
             case "foggy":
-                foggy.ClearFromPlayer(player);
+                if (foggy == null) foggy = new Foggy();
+                if (foggy != null) foggy.ClearFromPlayer(player);
                 break;
             case "focused":
-                focused.ClearFromPlayer(player);
+                if (focused == null) focused = new Focused();
+                if (focused != null) focused.ClearFromPlayer(player);
                 break;
             case "gingeritis":
-                gingeritis.ClearFromPlayer(player);
+                if (gingeritis == null) gingeritis = new Gingeritis();
+                if (gingeritis != null) gingeritis.ClearFromPlayer(player);
                 break;
             case "glowing":
             case "glowie":
-                glowie.ClearFromPlayer(player);
+                if (glowie == null) glowie = new Glowie();
+                if (glowie != null) glowie.ClearFromPlayer(player);
                 break;
             case "jennerising":
-                jennerising.ClearFromPlayer(player);
+                if (jennerising == null) jennerising = new Jennerising();
+                if (jennerising != null) jennerising.ClearFromPlayer(player);
                 break;
             case "laxative":
-                laxative.ClearFromPlayer(player);
+                if (laxative == null) laxative = new Laxative();
+                if (laxative != null) laxative.ClearFromPlayer(player);
                 break;
             case "lethal":
-                lethal.ClearFromPlayer(player);
+                if (lethal == null) lethal = new Lethal();
+                if (lethal != null) lethal.ClearFromPlayer(player);
                 break;
             case "longfaced":
             case "long_faced":
-                longFaced.ClearFromPlayer(player);
+                if (longFaced == null) longFaced = new LongFaced();
+                if (longFaced != null) longFaced.ClearFromPlayer(player);
                 break;
             case "munchies":
-                munchies.ClearFromPlayer(player);
+                if (munchies == null) munchies = new Munchies();
+                if (munchies != null) munchies.ClearFromPlayer(player);
                 break;
             case "paranoia":
-                paranoia.ClearFromPlayer(player);
+                if (paranoia == null) paranoia = new Paranoia();
+                if (paranoia != null) paranoia.ClearFromPlayer(player);
                 break;
             case "refreshing":
-                refreshing.ClearFromPlayer(player);
+                if (refreshing == null) refreshing = new Refreshing();
+                if (refreshing != null) refreshing.ClearFromPlayer(player);
                 break;
             case "schizophrenic":
-                schizophrenic.ClearFromPlayer(player);
+                if (schizophrenic == null) schizophrenic = new Schizophrenic();
+                if (schizophrenic != null) schizophrenic.ClearFromPlayer(player);
                 break;
             case "sedating":
-                sedating.ClearFromPlayer(player);
+                if (sedating == null) sedating = new Sedating();
+                if (sedating != null) sedating.ClearFromPlayer(player);
                 break;
             case "seizure_inducing":
             case "seizureinducing":
             case "seizure":
-                seizure.ClearFromPlayer(player);
+                if (seizure == null) seizure = new Seizure();
+                if (seizure != null) seizure.ClearFromPlayer(player);
                 break;
             case "shrinking":
-                shrinking.ClearFromPlayer(player);
+                if (shrinking == null) shrinking = new Shrinking();
+                if (shrinking != null) shrinking.ClearFromPlayer(player);
                 break;
             case "slippery":
-                slippery.ClearFromPlayer(player);
+                if (slippery == null) slippery = new Slippery();
+                if (slippery != null) slippery.ClearFromPlayer(player);
                 break;
             case "smelly":
-                smelly.ClearFromPlayer(player);
+                if (smelly == null) smelly = new Smelly();
+                if (smelly != null) smelly.ClearFromPlayer(player);
                 break;
             case "sneaky":
-                sneaky.ClearFromPlayer(player);
+                if (sneaky == null) sneaky = new Sneaky();
+                if (sneaky != null) sneaky.ClearFromPlayer(player);
                 break;
             case "spicy":
-                spicy.ClearFromPlayer(player);
+                if (spicy == null) spicy = new Spicy();
+                if (spicy != null) spicy.ClearFromPlayer(player);
                 break;
             case "thoughtprovoking":
             case "thought_provoking":
-                thoughtProvoking.ClearFromPlayer(player);
+                if (thoughtProvoking == null) thoughtProvoking = new ThoughtProvoking();
+                if (thoughtProvoking != null) thoughtProvoking.ClearFromPlayer(player);
                 break;
             case "toxic":
-                toxic.ClearFromPlayer(player);
+                if (toxic == null) toxic = new Toxic();
+                if (toxic != null) toxic.ClearFromPlayer(player);
                 break;
             case "tropicthunder":
             case "tropic_thunder":
-                tropicThunder.ClearFromPlayer(player);
+                if (tropicThunder == null) tropicThunder = new TropicThunder();
+                if (tropicThunder != null) tropicThunder.ClearFromPlayer(player);
                 break;
             case "zombifying":
-                zombifying.ClearFromPlayer(player);
+                if (zombifying == null) zombifying = new Zombifying();
+                if (zombifying != null) zombifying.ClearFromPlayer(player);
                 break;
             default:
                 MelonLogger.Warning($"Property '{propertyName}' not found in the available properties.");
@@ -395,117 +433,152 @@ public class PropertyManager
         {
             case "antigravitiy":
             case "anti_gravity":
-                antiGravity.ApplyToPlayer(player);
+                if (antiGravity == null) antiGravity = new AntiGravity();
+                if (antiGravity != null) antiGravity.ApplyToPlayer(player);
                 break;
             case "athletic":
-                athletic.ApplyToPlayer(player);
+                if (athletic == null) athletic = new Athletic();
+                if (athletic != null) athletic.ApplyToPlayer(player);
                 break;
             case "balding":
-                balding.ApplyToPlayer(player);
+                if (balding == null) balding = new Balding();
+                if (balding != null) balding.ApplyToPlayer(player);
                 break;
             case "brighteyed":
             case "bright_eyed":
-                brightEyed.ApplyToPlayer(player);
+                if (brightEyed == null) brightEyed = new BrightEyed();
+                if (brightEyed != null) brightEyed.ApplyToPlayer(player);
                 break;
             case "calming":
-                calming.ApplyToPlayer(player);
+                if (calming == null) calming = new Calming();
+                if (calming != null) calming.ApplyToPlayer(player);
                 break;
             case "caloriedense":
             case "calorie_dense":
-                calorieDense.ApplyToPlayer(player);
+                if (calorieDense == null) calorieDense = new CalorieDense();
+                if (calorieDense != null) calorieDense.ApplyToPlayer(player);
                 break;
             case "cyclopean":
-                cyclopean.ApplyToPlayer(player);
+                if (cyclopean == null) cyclopean = new Cyclopean();
+                if (cyclopean != null) cyclopean.ApplyToPlayer(player);
                 break;
             case "disorienting":
-                disorienting.ApplyToPlayer(player);
+                if (disorienting == null) disorienting = new Disorienting();
+                if (disorienting != null) disorienting.ApplyToPlayer(player);
                 break;
             case "electrifying":
-                electrifying.ApplyToPlayer(player);
+                if (electrifying == null) electrifying = new Electrifying();
+                if (electrifying != null) electrifying.ApplyToPlayer(player);
                 break;
             case "energizing":
-                energizing.ApplyToPlayer(player);
+                if (energizing == null) energizing = new Energizing();
+                if (energizing != null) energizing.ApplyToPlayer(player);
                 break;
             case "euphoric":
-                euphoric.ApplyToPlayer(player);
+                if (euphoric == null) euphoric = new Euphoric();
+                if (euphoric != null) euphoric.ApplyToPlayer(player);
                 break;
             case "explosive":
-                explosive.ApplyToPlayer(player);
+                if (explosive == null) explosive = new Explosive();
+                if (explosive != null) explosive.ApplyToPlayer(player);
                 break;
             case "foggy":
-                foggy.ApplyToPlayer(player);
+                if (foggy == null) foggy = new Foggy();
+                if (foggy != null) foggy.ApplyToPlayer(player);
                 break;
             case "focused":
-                focused.ApplyToPlayer(player);
+                if (focused == null) focused = new Focused();
+                if (focused != null) focused.ApplyToPlayer(player);
                 break;
             case "gingeritis":
-                gingeritis.ApplyToPlayer(player);
+                if (gingeritis == null) gingeritis = new Gingeritis();
+                if (gingeritis != null) gingeritis.ApplyToPlayer(player);
                 break;
             case "glowing":
             case "glowie":
-                glowie.ApplyToPlayer(player);
+                if (glowie == null) glowie = new Glowie();
+                if (glowie != null) glowie.ApplyToPlayer(player);
                 break;
             case "jennerising":
-                jennerising.ApplyToPlayer(player);
+                if (jennerising == null) jennerising = new Jennerising();
+                if (jennerising != null) jennerising.ApplyToPlayer(player);
                 break;
             case "laxative":
-                laxative.ApplyToPlayer(player);
+                if (laxative == null) laxative = new Laxative();
+                if (laxative != null) laxative.ApplyToPlayer(player);
                 break;
             case "lethal":
-                lethal.ApplyToPlayer(player);
+                if (lethal == null) lethal = new Lethal();
+                if (lethal != null) lethal.ApplyToPlayer(player);
                 break;
             case "longfaced":
             case "long_faced":
-                longFaced.ApplyToPlayer(player);
+                if (longFaced == null) longFaced = new LongFaced();
+                if (longFaced != null) longFaced.ApplyToPlayer(player);
                 break;
             case "munchies":
-                munchies.ApplyToPlayer(player);
+                if (munchies == null) munchies = new Munchies();
+                if (munchies != null) munchies.ApplyToPlayer(player);
                 break;
             case "paranoia":
-                paranoia.ApplyToPlayer(player);
+                if (paranoia == null) paranoia = new Paranoia();
+                if (paranoia != null) paranoia.ApplyToPlayer(player);
                 break;
             case "refreshing":
-                refreshing.ApplyToPlayer(player);
+                if (refreshing == null) refreshing = new Refreshing();
+                if (refreshing != null) refreshing.ApplyToPlayer(player);
                 break;
             case "schizophrenic":
-                schizophrenic.ApplyToPlayer(player);
+                if (schizophrenic == null) schizophrenic = new Schizophrenic();
+                if (schizophrenic != null) schizophrenic.ApplyToPlayer(player);
                 break;
             case "sedating":
-                sedating.ApplyToPlayer(player);
+                if (sedating == null) sedating = new Sedating();
+                if (sedating != null) sedating.ApplyToPlayer(player);
                 break;
             case "seizure_inducing":
             case "seizureinducing":
             case "seizure":
-                seizure.ApplyToPlayer(player);
+                if (seizure == null) seizure = new Seizure();
+                if (seizure != null) seizure.ApplyToPlayer(player);
                 break;
             case "shrinking":
-                shrinking.ApplyToPlayer(player);
+                if (shrinking == null) shrinking = new Shrinking();
+                if (shrinking != null) shrinking.ApplyToPlayer(player);
                 break;
             case "slippery":
-                slippery.ApplyToPlayer(player);
+                if (slippery == null) slippery = new Slippery();
+                if (slippery != null) slippery.ApplyToPlayer(player);
                 break;
             case "smelly":
-                smelly.ApplyToPlayer(player);
+                if (smelly == null) smelly = new Smelly();
+                if (smelly != null) smelly.ApplyToPlayer(player);
                 break;
             case "sneaky":
-                sneaky.ApplyToPlayer(player);
+                if (sneaky == null) sneaky = new Sneaky();
+                if (sneaky != null) sneaky.ApplyToPlayer(player);
                 break;
             case "spicy":
-                spicy.ApplyToPlayer(player);
+                if (spicy == null) spicy = new Spicy();
+                if (spicy != null) spicy.ApplyToPlayer(player);
                 break;
             case "thoughtprovoking":
             case "thought_provoking":
-                thoughtProvoking.ApplyToPlayer(player);
+                if (thoughtProvoking == null) thoughtProvoking = new ThoughtProvoking();
+                if (thoughtProvoking != null) thoughtProvoking.ApplyToPlayer(player);
                 break;
             case "toxic":
-                toxic.ApplyToPlayer(player);
+                if (toxic == null) toxic = new Toxic();
+                if (toxic != null) toxic.ApplyToPlayer(player);
                 break;
             case "tropicthunder":
             case "tropic_thunder":
-                tropicThunder.ApplyToPlayer(player);
+                if (tropicThunder == null) tropicThunder = new TropicThunder();
+                if (tropicThunder != null) tropicThunder.ApplyToPlayer(player);
                 break;
             case "zombifying":
-                zombifying.ApplyToPlayer(player);
+                if (zombifying == null) zombifying = new Zombifying();
+                if (zombifying != null) zombifying.ApplyToPlayer(player);
                 break;
             default:
                 MelonLogger.Warning($"Property '{propertyName}' not found in the available properties.");
@@ -584,7 +657,6 @@ public class PropertyManager
     public Toxic toxic = new Toxic();
     public TropicThunder tropicThunder = new TropicThunder();
     public Zombifying zombifying = new Zombifying();
-
     private static readonly string ConfigFolder = Path.Combine(MelonEnvironment.UserDataDirectory, "MoreRealisticSleeping");
     private static readonly string EffectImagesFolder = Path.Combine(ConfigFolder, "EffectImages");
     private static readonly string FilePath = Path.Combine(ConfigFolder, "SleepingAppIcon.png");

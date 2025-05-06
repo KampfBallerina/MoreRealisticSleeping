@@ -11,7 +11,7 @@ using Il2CppScheduleOne.Money;
 using UnityEngine.UI;
 using MoreRealisticSleeping.Util;
 
-[assembly: MelonInfo(typeof(MoreRealisticSleeping.MRSCore), "MoreRealisticSleeping", "1.0.0", "KampfBallerina", null)]
+[assembly: MelonInfo(typeof(MoreRealisticSleeping.MRSCore), "MoreRealisticSleeping", "1.0.1", "KampfBallerina", null)]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace MoreRealisticSleeping
@@ -42,6 +42,7 @@ namespace MoreRealisticSleeping
         private bool isForcedSleep = false;
         private bool isFirstSleep = true;
         public SleepCanvas sleepCanvas;
+        public DailySummary dailySummary;
         public TimeManager timeManager = null;
         public ConfigState config = null;
         private static readonly string ConfigFolder = Path.Combine(MelonEnvironment.UserDataDirectory, "MoreRealisticSleeping");
@@ -56,6 +57,13 @@ namespace MoreRealisticSleeping
         public bool isStartCooldownRunning = false;
         public Coroutine monitorTimeForSleepCoroutine;
         public Coroutine startCooldownCoroutine;
+        public Coroutine forceSleepDelayCoroutine;
+        public Coroutine initializeLaunderAppCoroutine;
+        public Coroutine waitForSleepingAppCoroutine;
+        public Coroutine startAppCoroutinesAfterDelayCoroutine;
+        public Coroutine initTimeManagerCoroutine;
+
+        private string sSceneName = null;
 
 
         public override void OnInitializeMelon()
@@ -69,8 +77,10 @@ namespace MoreRealisticSleeping
         {
             if (sceneName == "Main")
             {
+                sSceneName = sceneName.ToString();
                 MRSCore.Instance.config = Config.ConfigManager.Load();
                 MRSCore.Instance.propertyManager = new PropertyManager();
+
                 MRSCore.Instance.moneyManager = UnityEngine.Object.FindObjectOfType<MoneyManager>();
                 MRSCore.Instance.notificationsManager = UnityEngine.Object.FindObjectOfType<NotificationsManager>();
 
@@ -82,35 +92,81 @@ namespace MoreRealisticSleeping
                 else
                 {
                     LoggerInstance.Msg("Use_Legit_Version is disabled. Proceeding with default behavior.");
-                    MelonCoroutines.Start(StartAppCoroutinesAfterDelay());
+                    startAppCoroutinesAfterDelayCoroutine = (Coroutine)MelonCoroutines.Start(StartAppCoroutinesAfterDelay());
                 }
-                MelonCoroutines.Start(InitTimeManager());
+                initTimeManagerCoroutine = (Coroutine)MelonCoroutines.Start(InitTimeManager());
+
+                if (Il2CppScheduleOne.Networking.Lobby.Instance.IsHost)
+                {
+                    //   LoggerInstance.Msg("Current player is the host. Performing host-specific actions.");
+
+                }
+                else
+                {
+                    //   LoggerInstance.Msg("Current player is a client.");
+
+                }
 
             }
             else if (sceneName.Equals("Menu", StringComparison.OrdinalIgnoreCase))
             {
+                sSceneName = sceneName.ToString();
                 //LoggerInstance.Msg("Menu scene loaded. Stopping time monitoring.");
-                if (timeManager != null)
-                {
+                ResetAllVariables();
 
-                    ResetAllVariables();
+                if (Il2CppScheduleOne.Networking.Lobby.Instance.IsHost)
+                {
+                    //  LoggerInstance.Msg("Current player is the host. Performing host-specific actions.");
+
+
+                }
+                else
+                {
+                    //    LoggerInstance.Msg("Current player is a client.");
+
+
                 }
             }
         }
 
         private void ResetAllVariables()
         {
-            StopAllCoroutines();
-            MelonCoroutines.Stop(MRSCore.sleepingApp.InitializeLaunderApp());
-            MelonCoroutines.Stop(WaitForSleepingAppAndCreateEntry());
-            MelonCoroutines.Stop(StartAppCoroutinesAfterDelay());
-            MelonCoroutines.Stop(InitTimeManager());
+            // Überprüfen und Stoppen der Coroutines mit null setzen
+            if (initializeLaunderAppCoroutine != null)
+            {
+                MelonCoroutines.Stop(initializeLaunderAppCoroutine);
+                initializeLaunderAppCoroutine = null;
+                LoggerInstance.Msg("Stopped InitializeLaunderApp coroutine.");
+            }
 
+            if (waitForSleepingAppCoroutine != null)
+            {
+                MelonCoroutines.Stop(waitForSleepingAppCoroutine);
+                waitForSleepingAppCoroutine = null;
+                LoggerInstance.Msg("Stopped WaitForSleepingAppAndCreateEntry coroutine.");
+            }
+
+            if (startAppCoroutinesAfterDelayCoroutine != null)
+            {
+                MelonCoroutines.Stop(startAppCoroutinesAfterDelayCoroutine);
+                startAppCoroutinesAfterDelayCoroutine = null;
+                LoggerInstance.Msg("Stopped StartAppCoroutinesAfterDelay coroutine.");
+            }
+
+            if (initTimeManagerCoroutine != null)
+            {
+                MelonCoroutines.Stop(initTimeManagerCoroutine);
+                initTimeManagerCoroutine = null;
+                LoggerInstance.Msg("Stopped InitTimeManager coroutine.");
+            }
+
+            StopAllCoroutines();
             MRSCore.Instance.config = null;
 
             isLegitVersion = false;
             MRSCore.Instance.timeManager = null;
             MRSCore.Instance.sleepCanvas = null;
+            MRSCore.Instance.dailySummary = null;
             isFirstSleep = true;
 
             isForcedSleep = false;
@@ -150,12 +206,21 @@ namespace MoreRealisticSleeping
 
             // LoggerInstance.Msg("Current GetDateTime: " + timeManager.GetDateTime());
             // LoggerInstance.Msg("Current Day: " + timeManager.CurrentDay);
-            // LoggerInstance.Msg("Current Hour: " + timeManager.CurrentTime);
-
+            // LoggerInstance.Msg("Current Hour: " + timeManager.CurrentTime); 
+            // UI / DailySummary / Container /
+            // UI / LevelUp
+            // Il2CppScheduleOne.UI.IPostSleepEvent
         }
 
         public void StopAllCoroutines()
         {
+            if (forceSleepDelayCoroutine != null)
+            {
+                MelonCoroutines.Stop(forceSleepDelayCoroutine);
+                LoggerInstance.Msg("Stopped ForceSleepDelay coroutine.");
+                forceSleepDelayCoroutine = null;
+            }
+
             // Überprüfe und stoppe die Coroutine MonitorTimeForSleep
             if (monitorTimeForSleepCoroutine != null)
             {
@@ -194,24 +259,28 @@ namespace MoreRealisticSleeping
                     {
                         if (canTriggerSleep && !isStartCooldownRunning)
                         {
-                            LoggerInstance.Msg("Triggering sleep as CurrentTime is between 400 and 650.");
-                            if (MRSCore.Instance.config.SleepSettings.Enable_Forced_Sleep == true)
+                            if (MRSCore.Instance.config.SleepSettings.Enable_Forced_Sleep)
                             {
-                                ForceSleep();
+                                // Starte die Verzögerung für erzwungenen Schlaf
+                                if (forceSleepDelayCoroutine == null)
+                                {
+                                    LoggerInstance.Msg("Triggering sleep delay as CurrentTime is 4:00AM.");
+                                    forceSleepDelayCoroutine = (Coroutine)MelonCoroutines.Start(ForceSleepDelay());
+                                }
                             }
                             else
                             {
                                 LoggerInstance.Msg("Forced sleep is disabled in the config.");
+                                startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
                             }
 
-                            // Cooldown von 10 Sekunden aktivieren
-                            startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+
                         }
                     }
                 }
                 else
                 {
-                    LoggerInstance.Warning("TimeManager is null. Waiting for initialization..");
+                    LoggerInstance.Warning("TimeManager is null. Waiting for initialization...");
                 }
 
                 // Wartezeit zwischen den Überprüfungen
@@ -231,12 +300,83 @@ namespace MoreRealisticSleeping
 
             if (!isLegitVersion)
             {
-                MelonCoroutines.Start(MRSCore.sleepingApp.InitializeLaunderApp());
-                MelonCoroutines.Start(WaitForSleepingAppAndCreateEntry());
+                if (initializeLaunderAppCoroutine == null)
+                {
+                    initializeLaunderAppCoroutine = (Coroutine)MelonCoroutines.Start(MRSCore.sleepingApp.InitializeLaunderApp());
+                }
+                else
+                {
+                    LoggerInstance.Msg("InitializeLaunderApp coroutine is already running. Skipping initialization.");
+                }
+                if (waitForSleepingAppCoroutine == null)
+                {
+                    waitForSleepingAppCoroutine = (Coroutine)MelonCoroutines.Start(WaitForSleepingAppAndCreateEntry());
+                }
+                else
+                {
+                    LoggerInstance.Msg("WaitForSleepingAppAndCreateEntry coroutine is already running. Skipping initialization.");
+                }
             }
         }
 
+        private IEnumerator ForceSleepDelay()
+        {
+            float delayTime = MRSCore.Instance.config.SleepSettings.Forced_Sleep_Delay;
 
+            if (delayTime <= 0f)
+            {
+                LoggerInstance.Msg("Forced_Sleep_Delay is set to 0 or less. Skipping delay and triggering forced sleep immediately.");
+                ForceSleep();
+                startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                forceSleepDelayCoroutine = null;
+                yield break;
+            }
+
+            LoggerInstance.Msg($"Force sleep delay started for {delayTime} seconds.");
+            Player[] players = GameObject.FindObjectsOfType<Player>();
+            Player localPlayer = null;
+
+            foreach (Player player in players)
+            {
+                // Überprüfe, ob der Spieler der lokale Spieler ist
+                if (player.IsLocalPlayer)
+                {
+                    localPlayer = player;
+                    break;
+                }
+            }
+
+            if (localPlayer != null)
+            {
+                MelonLogger.Msg("Local player found: " + localPlayer.name);
+            }
+            else
+            {
+                MelonLogger.Warning("No local player found.");
+            }
+
+
+            float elapsedTime = 0f;
+            while (elapsedTime < delayTime)
+            {
+                // Überprüfen, ob der Spieler bereits schläft
+                if (localPlayer.IsSleeping || localPlayer.IsReadyToSleep)
+                {
+                    LoggerInstance.Msg("Player is already sleeping. Force sleep canceled.");
+                    forceSleepDelayCoroutine = null;
+                    yield break; // Beende die Coroutine, wenn der Spieler schläft
+                }
+
+                elapsedTime += 1f;
+                yield return new WaitForSeconds(1f); // Warte bis zum nächsten Frame
+            }
+
+            LoggerInstance.Msg("Force sleep delay ended. Triggering forced sleep.");
+            ForceSleep(); // Erzwinge den Schlaf nach Ablauf der Verzögerung
+            startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+            forceSleepDelayCoroutine = null;
+            yield break;
+        }
         private void ForceSleep()
         {
             // Überprüfen, ob der Cooldown aktiv ist
@@ -269,9 +409,14 @@ namespace MoreRealisticSleeping
 
                     canTriggerSleep = false; // Cooldown aktivieren
                     MRSCore.Instance.sleepCanvas.SetIsOpen(open: true); // SleepCanvas öffnen
-                    MRSCore.Instance.sleepCanvas.SleepStart(); // Schlaf starten
-                    isForcedSleep = true; // Setze isForcedSleep auf true
+                    MRSCore.Instance.sleepCanvas.SleepStart(); // Schlaf starten  
 
+                    if (MRSCore.Instance.config.SleepSettings.Auto_Skip_Daily_Summary)
+                    {
+                        MelonCoroutines.Start(DelayDailySummaryPress(3f));
+                    }
+
+                    isForcedSleep = true; // Setze isForcedSleep auf true
                     // LoggerInstance.Msg("Sleep forced successfully.");
                 }
                 else
@@ -282,13 +427,32 @@ namespace MoreRealisticSleeping
             catch (Exception ex)
             {
                 LoggerInstance.Error("Error in TriggerSleep: " + ex.Message + "\n" + ex.StackTrace);
+
+            }
+
+        }
+
+        public IEnumerator DelayDailySummaryPress(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            MRSCore.Instance.dailySummary = UnityEngine.Object.FindObjectOfType<DailySummary>();
+            if (MRSCore.Instance.dailySummary != null)
+            {
+                MRSCore.Instance.dailySummary.transform.Find("Container/Continue").GetComponent<Button>().onClick.Invoke(); // Klicke auf den Button "Continue"
+                MRSCore.Instance.dailySummary.SleepEnd(); // Schlaf beenden
+                MRSCore.Instance.dailySummary.Close();
+                // MelonLogger.Msg("Clicked on Continue button in DailySummary.");
+            }
+            else
+            {
+                LoggerInstance.Error("Could not find DailySummary instance.");
             }
         }
 
         public IEnumerator StartCooldown()
         {
             // Markiere die Coroutine als aktiv
-            if (isCooldownActive)
+            if (isCooldownActive || isStartCooldownRunning)
             {
                 // LoggerInstance.Msg("Cooldown is already active. Skipping StartCooldown.");
                 yield break; // Beende die Coroutine, wenn bereits ein Cooldown läuft
@@ -309,6 +473,7 @@ namespace MoreRealisticSleeping
             isCooldownActive = false; // Cooldown als beendet markieren
             isStartCooldownRunning = false;
             LoggerInstance.Msg("Cooldown ended. Sleep triggering is now enabled again.");
+            startCooldownCoroutine = null; // Setze die Coroutine-Referenz zurück
         }
 
         private void TriggerAfterSleepEffect()
@@ -341,7 +506,9 @@ namespace MoreRealisticSleeping
                             LoggerInstance.Error("Player or Player GameObject is null.");
                         }
                     }
-                } else {
+                }
+                else
+                {
                     LoggerInstance.Msg("Negative effects are disabled in the config.");
                 }
             }
@@ -371,7 +538,9 @@ namespace MoreRealisticSleeping
                             LoggerInstance.Error("Player or Player GameObject is null.");
                         }
                     }
-                } else {
+                }
+                else
+                {
                     LoggerInstance.Msg("Positive effects are disabled in the config.");
                 }
             }
@@ -395,8 +564,12 @@ namespace MoreRealisticSleeping
             // Überprüfe, ob die Laundering App geladen ist
             if (!MRSCore.sleepingApp._isSleepingAppLoaded)
             {
-                MelonCoroutines.Start(WaitForSleepingAppAndCreateEntry());
-                return;
+                if (waitForSleepingAppCoroutine == null)
+                {
+                    //LoggerInstance.Msg("SleepingApp is not loaded yet. Waiting for it to load.");
+                    waitForSleepingAppCoroutine = (Coroutine)MelonCoroutines.Start(WaitForSleepingAppAndCreateEntry());
+                    return;
+                }
             }
             //Settings
             sleepingApp.AddEntryFromTemplate("GeneralSettingsSection", "General Settings", "~Forced Sleep, Enable/Disable Effects, Probabilitys, Durations~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "Settings.png"));
