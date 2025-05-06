@@ -22,7 +22,8 @@
     Added a new Checkbox to enable the automatic skipping
     This can be used to automatically press the "Continue"-Buttons when the Sleep Canvas appears
     This leads to no more "Waiting for host.." since the host will automatically continue when enabled
-    
+    ![General Settings](https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db)
+
 
 ## 🚀 Planned Features
 - **Custom Sleep Times:**  
@@ -74,7 +75,7 @@ This feature enhances the cooperative gameplay experience by ensuring that all p
 
 The `Dynamic App Integration` feature allows seamless interaction like other in-game apps, enhancing the overall gameplay experience. This feature ensures that the mod dynamically adapts to changes in the game environment.
 
-![General Settings](https://github.com/user-attachments/assets/3626252e-6224-42b2-a7ae-ac8a12bbebbb)
+![General Settings](https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db)
 
 - **Real-Time Updates:**  
     Changes made to the settings are applied instantly without requiring a game restart.
