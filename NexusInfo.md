@@ -28,6 +28,8 @@ This can be used to automatically press the "Continue"-Buttons when the Sleep Ca
 This leads to no more "Waiting for host.." since the host will automatically continue when enabled
 [/list]
 
+[center][img]https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db[/img][/center]
+
 [size=5][b]🚀 Planned Features[/b][/size]
 
 [list]
@@ -81,7 +83,7 @@ This feature enhances the cooperative gameplay experience by ensuring that all p
 [size=4][b]Dynamic App Integration[/b][/size]
 The `Dynamic App Integration` feature allows seamless interaction like other in-game apps, enhancing the overall gameplay experience. This feature ensures that the mod dynamically adapts to changes in the game environment.
 
-[center][img]https://github.com/user-attachments/assets/3626252e-6224-42b2-a7ae-ac8a12bbebbb[/img][/center]
+[center][img]https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db[/img][/center]
 
 [list]
 [*][b]Real-Time Updates:[/b]  

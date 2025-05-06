@@ -22,6 +22,7 @@
     Added a new Checkbox to enable the automatic skipping
     This can be used to automatically press the "Continue"-Buttons when the Sleep Canvas appears
     This leads to no more "Waiting for host.." since the host will automatically continue when enabled
+    
     ![General Settings](https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db)
 
 
