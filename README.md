@@ -7,9 +7,22 @@
 
 ## ⚠️ Known Incompatibilities / Issues
 - **Incompatibility with other mods modifying the sleep system:**  
-  Mods that alter the sleep mechanics or the `SleepCanvas` may conflict with `MoreRealisticSleeping`.
+    Mods that alter the sleep mechanics or the `SleepCanvas` may conflict with `MoreRealisticSleeping`.
 - **Incompatibility with most translation mods:**  
-  Mods that replace some of the names in the apps `Deliveries App` or `Products App`  may conflict.
+    Mods that replace some of the names in the apps `Deliveries App` or `Products App`  may conflict.
+- **Multiplayer Effects:**
+    The effects are most likely client-side, meaning that it won't be visible in Mutliplayer
+    It might not work for Joining Players (please test this yourself)
+
+
+## 🆕 Whats new in V1.0.1?
+- **Delay after 4:00 AM:**
+    Allow to add a new configurable delay, starting at 4:00 AM before the Forced Sleep will be triggered
+- **Automatic Sleep Animation Skipping (Multiplayer usage):**
+    Added a new Checkbox to enable the automatic skipping
+    This can be used to automatically press the "Continue"-Buttons when the Sleep Canvas appears
+    This leads to no more "Waiting for host.." since the host will automatically continue when enabled
+    
 
 ## 🚀 Planned Features
 - **Custom Sleep Times:**  
@@ -142,6 +155,8 @@ The mod's settings can be customized via the `MoreRealisticSleeping.json` config
     "SleepSettings": {
         "Enable_Forced_Sleep": true, ### When true, the player will be forced to sleep at ~ 4 AM
         "Cooldown_Time": 500, ### Specifies the cooldown before another sleep can be forced - leave this at 500, it's more like a debug feature
+        "Forced_Sleep_Delay": 0, ### Specifies the delay after 4AM before Sleep actually is triggered
+        "Auto_Skip_Daily_Summary": false, ### Will skip all Sleep Canvas and Daily Summary screens automatically (use as host if afk)
         "Enable_Positive_Effects": true, ### When true, positive Post-Sleep Effects can accur
         "Positive_Effects_Probability": 25,  ### Probability/Change in % for positive effects to accur
         "Positive_Effects_Duration": 60, ### Duration in seconds for positive effects
