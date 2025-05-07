@@ -15,7 +15,7 @@
     It might not work for Joining Players (please test this yourself)
 
 
-## 🆕 Whats new in V1.0.1?
+## 🆕 Whats new in V1.0.2?
 - **Delay after 4:00 AM:**
     Allow to add a new configurable delay, starting at 4:00 AM before the Forced Sleep will be triggered
 - **Automatic Sleep Animation Skipping (Multiplayer usage):**

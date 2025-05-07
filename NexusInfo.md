@@ -18,7 +18,7 @@ The effects are most likely client-side, meaning that it won't be visible in Mut
 It might not work for Joining Players (please test this yourself)
 [/list]
 
-[size=5][b]🆕 Whats new in V1.0.1?[/b][/size]
+[size=5][b]🆕 Whats new in V1.0.2?[/b][/size]
 [list]
 [*][b]Delay after 4:00 AM:[/b]
 Allow to add a new configurable delay, starting at 4:00 AM before the Forced Sleep will be triggered
