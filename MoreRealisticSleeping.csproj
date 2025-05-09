@@ -474,6 +474,8 @@
 		
 		<Compile Include="PhoneApp/SleepingApp.cs" />
 
+		<Compile Include="EventManager/EventManager.cs" />
+
 		<Compile Include="Util/FontLoader.cs" />
 		<Compile Include="Util/Colors.cs" />
 		<Compile Include="Util/Utils.cs" />

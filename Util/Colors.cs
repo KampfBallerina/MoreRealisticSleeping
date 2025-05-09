@@ -22,13 +22,10 @@ namespace MoreRealisticSleeping.Util
             { "Grey", new Color32(49, 49, 49, byte.MaxValue) },
             { "Light Grey", new Color32(90, 90, 90, byte.MaxValue)},
             { "Ultra Light Grey", new Color32(150, 150, 150, byte.MaxValue) },
-            { "Redpurple", new Color32(112, 21, 37, byte.MaxValue) },
-
-            { "White", new Color32(255, 255, 255, byte.MaxValue) },
-            { "Black", new Color32(0, 0, 0, byte.MaxValue) },
             { "Dark Grey", new Color32(30, 30, 30, byte.MaxValue) },
-            { "Brown", new Color32(139, 69, 19, byte.MaxValue) },
-            { "Pink", new Color32(255, 192, 203, byte.MaxValue) }
+            { "Redpurple", new Color32(112, 21, 37, byte.MaxValue) },
+            { "White", new Color32(255, 255, 255, byte.MaxValue) },
+            { "Black", new Color32(0, 0, 0, byte.MaxValue) }
         };
         }
 

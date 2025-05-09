@@ -18,15 +18,6 @@ namespace MoreRealisticSleeping
 {
 
     /*
-    ObjectScripts.Bed -> Bed.Min_sleep_time, sleep_time_scale
-    UI.DailySummary .SleepStart(), .SleepEnd()
-    PlayerScripts.Player .IsReadyToSleep, isSleeping, areAllPlayersReadyToSleep_Public_Static_boolean
-    UI.SleepCanvas
-    GameTime.TimeManager.EndSleep()
-
-    -> SleepButtonPressed() -> SleepStart() -> PostSleepEvent
-
-
     ClampWakeTime(int time) -> 0-2400 Ist die Weckzeit
     */
 
@@ -51,6 +42,8 @@ namespace MoreRealisticSleeping
         public NotificationsManager notificationsManager;
         public MoneyManager moneyManager;
         public PropertyManager propertyManager;
+
+        public EventManager.EventManager eventManager;
         public static PhoneApp.SleepingApp sleepingApp = new PhoneApp.SleepingApp();
 
         public bool isMonitorTimeForSleepRunning = false;
@@ -62,6 +55,11 @@ namespace MoreRealisticSleeping
         public Coroutine waitForSleepingAppCoroutine;
         public Coroutine startAppCoroutinesAfterDelayCoroutine;
         public Coroutine initTimeManagerCoroutine;
+        public Coroutine initLocalPlayerCoroutine;
+        public Coroutine onLocalPlayerInitializedCoroutine;
+        public Player localPlayer { get; private set; }
+
+        public PlayerCrimeData localPlayerCrimeData { get; private set; }
 
         private string sSceneName = null;
 
@@ -83,6 +81,7 @@ namespace MoreRealisticSleeping
 
                 MRSCore.Instance.moneyManager = UnityEngine.Object.FindObjectOfType<MoneyManager>();
                 MRSCore.Instance.notificationsManager = UnityEngine.Object.FindObjectOfType<NotificationsManager>();
+                MRSCore.Instance.eventManager = new EventManager.EventManager();
 
                 if (MRSCore.Instance.config.Use_Legit_Version)
                 {
@@ -94,6 +93,7 @@ namespace MoreRealisticSleeping
                     LoggerInstance.Msg("Use_Legit_Version is disabled. Proceeding with default behavior.");
                     startAppCoroutinesAfterDelayCoroutine = (Coroutine)MelonCoroutines.Start(StartAppCoroutinesAfterDelay());
                 }
+                initLocalPlayerCoroutine = (Coroutine)MelonCoroutines.Start(InitializeLocalPlayer());
                 initTimeManagerCoroutine = (Coroutine)MelonCoroutines.Start(InitTimeManager());
 
                 if (Il2CppScheduleOne.Networking.Lobby.Instance.IsHost)
@@ -194,7 +194,18 @@ namespace MoreRealisticSleeping
                     {
                         void FuncThatCallsOtherFunc() => TriggerAfterSleepEffect();
                         MRSCore.Instance.sleepCanvas.onSleepEndFade.AddListener((UnityAction)FuncThatCallsOtherFunc);
-                        void FuncThatCallsCooldownFunc() => startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                        void FuncThatCallsCooldownFunc()
+                        {
+                            if (MRSCore.Instance.startCooldownCoroutine == null && !Instance.isStartCooldownRunning)
+                            {
+                                MRSCore.Instance.startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                                //LoggerInstance.Msg("StartCooldown coroutine started from listener.");
+                            }
+                            else
+                            {
+                                // LoggerInstance.Warning("StartCooldown coroutine is already running. Skipping.");
+                            }
+                        }
                         MRSCore.Instance.sleepCanvas.onSleepEndFade.AddListener((UnityAction)FuncThatCallsCooldownFunc);
                         isFirstSleep = false; // Setze isFirstSleep auf false, um die Listener nur einmal hinzuzufügen
                     }
@@ -210,6 +221,23 @@ namespace MoreRealisticSleeping
             // UI / DailySummary / Container /
             // UI / LevelUp
             // Il2CppScheduleOne.UI.IPostSleepEvent
+        }
+
+        private IEnumerator InitializeLocalPlayer()
+        {
+            MelonLogger.Msg("Searching for local player...");
+            while (localPlayer == null)
+            {
+                localPlayer = GameObject.FindObjectsOfType<Player>()?.FirstOrDefault(player => player.IsLocalPlayer);
+                if (localPlayer == null)
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+
+            localPlayerCrimeData = localPlayer.CrimeData;
+            MelonLogger.Msg($"Local player found: {localPlayer.name}");
+            initLocalPlayerCoroutine = null; // Setze die Coroutine-Referenz zurück
         }
 
         public void StopAllCoroutines()
@@ -237,6 +265,13 @@ namespace MoreRealisticSleeping
                 startCooldownCoroutine = null;
                 isStartCooldownRunning = false;
                 LoggerInstance.Msg("Stopped StartCooldown coroutine.");
+            }
+
+            if (initLocalPlayerCoroutine != null)
+            {
+                MelonCoroutines.Stop(initLocalPlayerCoroutine);
+                initLocalPlayerCoroutine = null;
+                LoggerInstance.Msg("Stopped InitializeLocalPlayer coroutine.");
             }
 
             isForcedSleep = false;
@@ -271,7 +306,10 @@ namespace MoreRealisticSleeping
                             else
                             {
                                 LoggerInstance.Msg("Forced sleep is disabled in the config.");
-                                startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                                if (startCooldownCoroutine == null)
+                                {
+                                    startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                                }
                             }
 
 
@@ -327,34 +365,37 @@ namespace MoreRealisticSleeping
             {
                 LoggerInstance.Msg("Forced_Sleep_Delay is set to 0 or less. Skipping delay and triggering forced sleep immediately.");
                 ForceSleep();
-                startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                if (startCooldownCoroutine == null)
+                {
+                    startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                }
                 forceSleepDelayCoroutine = null;
                 yield break;
             }
 
             LoggerInstance.Msg($"Force sleep delay started for {delayTime} seconds.");
-            Player[] players = GameObject.FindObjectsOfType<Player>();
-            Player localPlayer = null;
 
-            foreach (Player player in players)
+            if (localPlayer == null)
             {
-                // Überprüfe, ob der Spieler der lokale Spieler ist
-                if (player.IsLocalPlayer)
+                Player[] players = GameObject.FindObjectsOfType<Player>();
+
+                foreach (Player player in players)
                 {
-                    localPlayer = player;
-                    break;
+                    // Überprüfe, ob der Spieler der lokale Spieler ist
+                    if (player.IsLocalPlayer)
+                    {
+                        localPlayer = player;
+                        break;
+                    }
                 }
             }
 
-            if (localPlayer != null)
+            if (localPlayer == null)
             {
-                MelonLogger.Msg("Local player found: " + localPlayer.name);
+                MelonLogger.Error("Local player not found. Cannot proceed with forced sleep.");
+                forceSleepDelayCoroutine = null;
+                yield break; // Beende die Coroutine, wenn der lokale Spieler nicht gefunden wurde
             }
-            else
-            {
-                MelonLogger.Warning("No local player found.");
-            }
-
 
             float elapsedTime = 0f;
             while (elapsedTime < delayTime)
@@ -373,7 +414,10 @@ namespace MoreRealisticSleeping
 
             LoggerInstance.Msg("Force sleep delay ended. Triggering forced sleep.");
             ForceSleep(); // Erzwinge den Schlaf nach Ablauf der Verzögerung
-            startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+            if (startCooldownCoroutine == null)
+            {
+                startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+            }
             forceSleepDelayCoroutine = null;
             yield break;
         }
@@ -402,7 +446,13 @@ namespace MoreRealisticSleeping
                         //Check if Listeners are set
                         void FuncThatCallsOtherFunc() => TriggerAfterSleepEffect();
                         MRSCore.Instance.sleepCanvas.onSleepEndFade.AddListener((UnityAction)FuncThatCallsOtherFunc);
-                        void FuncThatCallsCooldownFunc() => startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                        void FuncThatCallsCooldownFunc()
+                        {
+                            if (MRSCore.Instance.startCooldownCoroutine == null && !MRSCore.Instance.isStartCooldownRunning)
+                            {
+                                MRSCore.Instance.startCooldownCoroutine = (Coroutine)MelonCoroutines.Start(StartCooldown());
+                            }
+                        }
                         MRSCore.Instance.sleepCanvas.onSleepEndFade.AddListener((UnityAction)FuncThatCallsCooldownFunc);
                         isFirstSleep = false; // Setze isFirstSleep auf false, um die Listener nur einmal hinzuzufügen
                     }
@@ -452,7 +502,7 @@ namespace MoreRealisticSleeping
         public IEnumerator StartCooldown()
         {
             // Markiere die Coroutine als aktiv
-            if (isCooldownActive || isStartCooldownRunning)
+            if (isCooldownActive || isStartCooldownRunning || startCooldownCoroutine != null)
             {
                 // LoggerInstance.Msg("Cooldown is already active. Skipping StartCooldown.");
                 yield break; // Beende die Coroutine, wenn bereits ein Cooldown läuft
@@ -510,6 +560,43 @@ namespace MoreRealisticSleeping
                 else
                 {
                     LoggerInstance.Msg("Negative effects are disabled in the config.");
+                }
+
+                if (MRSCore.Instance.config.ArrestedEventSettings.Enable_GetArrested_Event)
+                {
+
+                    if (localPlayer != null && localPlayer.gameObject != null)
+                    {
+                        // Wahrscheinlichkeit für verhaftet zu werden prüfen
+                        var probability = MRSCore.Instance.config.ArrestedEventSettings.GetArrested_Event_Probability / 100f;
+                        var random = new System.Random();
+                        if (random.NextDouble() <= probability)
+                        {
+                            if (MRSCore.Instance.config.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces && eventManager.IsPlayerNearSaveProperty())
+                            {
+                                LoggerInstance.Msg("Not arrested due to save space proximity.");
+                                return;
+                            }
+                            else
+                            {
+                                eventManager.AddNewPublicSleepingCrime();
+                                localPlayer.Arrest();
+                            }
+                        }
+                        else
+                        {
+                            LoggerInstance.Msg("Not arrested due to probability.");
+                        }
+                        isForcedSleep = false;
+                    }
+                    else
+                    {
+                        LoggerInstance.Error("Player or Player GameObject is null.");
+                    }
+                }
+                else
+                {
+                    LoggerInstance.Msg("Arrested Event is disabled in the config.");
                 }
             }
             else //Spieler ist frühzeitig schlafen gegangen || TODO: Uhrzeit check, um festzulegen, wann früh ist
@@ -577,6 +664,9 @@ namespace MoreRealisticSleeping
             sleepingApp.AddEntryFromTemplate("PositiveEffectsSection", "Positive Effects", "~Choose positive Early-Sleep-Effects~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "PositiveEffects.png"));
 
             sleepingApp.AddEntryFromTemplate("NegativeEffectsSection", "Negative Effects", "~Choose negative Forced-Sleep-Effects~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "NegativeEffects.png"));
+
+            sleepingApp.AddEntryFromTemplate("ArrestedEventSection", "Arrested Event", "~Adjust settings for the Arrested Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "ArrestedEvent.png"));
+
         }
 
         public void ChangeAppIconImage(GameObject appIcon, string ImagePath)

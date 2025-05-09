@@ -99,6 +99,10 @@ namespace MoreRealisticSleeping.Config
                     EnsureFieldExists((object)jsonObject.EffectSettings.NegativeEffectSettings, "Tropic_Thunder", configState.EffectSettings.NegativeEffectSettings.Tropic_Thunder);
                     EnsureFieldExists((object)jsonObject.EffectSettings.NegativeEffectSettings, "Zombifying", configState.EffectSettings.NegativeEffectSettings.Zombifying);
 
+                    EnsureFieldExists((object)jsonObject.ArrestedEventSettings, "Enable_GetArrested_Event", configState.ArrestedEventSettings.Enable_GetArrested_Event);
+                    EnsureFieldExists((object)jsonObject.ArrestedEventSettings, "Enable_GetArrested_Event_SaveSpaces", configState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces);
+                    EnsureFieldExists((object)jsonObject.ArrestedEventSettings, "GetArrested_Event_Probability", configState.ArrestedEventSettings.GetArrested_Event_Probability);
+
                     if (isConfigUpdated)
                     {
                         MRSCore.Instance.StopAllCoroutines();
@@ -121,6 +125,9 @@ namespace MoreRealisticSleeping.Config
 
                     // Check Positive Effect Settings
                     ValidatePositiveEffects(loadedConfigState, configState, ref isConfigUpdated);
+
+                    // Check Event Settings
+                    ValidateEventSettings(loadedConfigState, configState, ref isConfigUpdated);
 
                     // Speichere die aktualisierte Konfiguration, falls Änderungen vorgenommen wurden
                     if (isConfigUpdated)
@@ -638,6 +645,33 @@ namespace MoreRealisticSleeping.Config
             {
                 MelonLogger.Warning("Invalid Zombifying in config. Adding default value (true).");
                 loadedConfigState.EffectSettings.NegativeEffectSettings.Zombifying = configState.EffectSettings.NegativeEffectSettings.Zombifying;
+                isConfigUpdated = true;
+            }
+        }
+
+        private static void ValidateEventSettings(ConfigState loadedConfigState, ConfigState configState, ref bool isConfigUpdated)
+        {
+            // Check if Enable Get Arrested Event is a boolean
+            if (loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event != true && loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event != false)
+            {
+                MelonLogger.Warning("Invalid Enable_Arrested_Event in config. Adding default value (true).");
+                loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event = configState.ArrestedEventSettings.Enable_GetArrested_Event;
+                isConfigUpdated = true;
+            }
+
+            // Check if Enable_GetArrested_Event_SaveSpaces is a boolean
+            if (loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces != true && loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces != false)
+            {
+                MelonLogger.Warning("Invalid Enable_GetArrested_Event_SaveSpaces in config. Adding default value (true).");
+                loadedConfigState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces = configState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces;
+                isConfigUpdated = true;
+            }
+
+            // Check if GetArrested_Event_Probability is a float
+            if (loadedConfigState.ArrestedEventSettings.GetArrested_Event_Probability > 100f || loadedConfigState.ArrestedEventSettings.GetArrested_Event_Probability < 1f)
+            {
+                MelonLogger.Warning("Invalid GetArrested_Event_Probability in config. Needs to be between 1 and 100. Adding default value (10%).");
+                loadedConfigState.ArrestedEventSettings.GetArrested_Event_Probability = configState.ArrestedEventSettings.GetArrested_Event_Probability;
                 isConfigUpdated = true;
             }
         }

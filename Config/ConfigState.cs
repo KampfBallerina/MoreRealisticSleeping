@@ -7,6 +7,9 @@ namespace MoreRealisticSleeping.Config
         public bool Use_Legit_Version = false;
         public SleepSettings SleepSettings { get; set; } = new SleepSettings();
         public EffectSettings EffectSettings { get; set; } = new EffectSettings();
+        public ArrestedEventSettings ArrestedEventSettings { get; set; } = new ArrestedEventSettings();
+
+
     }
 
     public class SleepSettings
@@ -28,7 +31,6 @@ namespace MoreRealisticSleeping.Config
         [JsonConverter(typeof(CleanFloatConverter))]
         public float Negative_Effects_Duration = 60f;
         public bool Enable_Effect_Notifications = true;
-
     }
     public class EffectSettings
     {
@@ -81,5 +83,13 @@ namespace MoreRealisticSleeping.Config
         public bool Toxic = true; // Causes user to vomit
         public bool Tropic_Thunder = true; //Change skin color
         public bool Zombifying = true; // Causes user to have a green skin and zombie voice
+    }
+
+    public class ArrestedEventSettings
+    {
+        public bool Enable_GetArrested_Event = true;
+        public bool Enable_GetArrested_Event_SaveSpaces = true; // Enable save spaces where no Events get triggered
+        [JsonConverter(typeof(CleanFloatConverter))]
+        public float GetArrested_Event_Probability = 10f; // Probability of getting arrested
     }
 }
