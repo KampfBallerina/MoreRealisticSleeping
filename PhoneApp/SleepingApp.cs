@@ -235,7 +235,7 @@ namespace MoreRealisticSleeping.PhoneApp
                     settingsSpaceTransform.gameObject.SetActive(true); // Hide
                     RectTransform settingsSpaceRect = settingsSpaceTransform.GetComponent<RectTransform>();
                     settingsSpaceRect.sizeDelta = new Vector2(settingsSpaceRect.sizeDelta.x, 200f);
-                }                   
+                }
             }
 
             CreateTemplates(container, settingsContentTransform);
@@ -260,6 +260,7 @@ namespace MoreRealisticSleeping.PhoneApp
             AddUiForPositiveEffects(settingsContentTransform);
             AddUiForNegativeEffects(settingsContentTransform);
             AddUIForArrestedEvent(settingsContentTransform);
+            AddUIForMurderedEvent(settingsContentTransform);
             _isSleepingAppLoaded = true;
         }
 
@@ -604,6 +605,11 @@ namespace MoreRealisticSleeping.PhoneApp
                     void FuncThatCallsFunc() => ArrestedEventSectionClicked();
                     headerButton.onClick.AddListener((UnityAction)FuncThatCallsFunc);
                 }
+                else if (newObjectName == "MurderedEventSection")
+                {
+                    void FuncThatCallsFunc() => MurderedEventSectionClicked();
+                    headerButton.onClick.AddListener((UnityAction)FuncThatCallsFunc);
+                }
                 else
                 {
                     void FuncThatCallsFunc() => MelonLogger.Msg("Clicked.");
@@ -666,6 +672,11 @@ namespace MoreRealisticSleeping.PhoneApp
                 arrestedEventObject.SetActive(false);
             }
 
+            if (murderedEventObject.activeSelf)
+            {
+                murderedEventObject.SetActive(false);
+            }
+
             SetCheckboxValue(positiveEffectsObject.transform, "Anti Gravity", MRSCore.Instance.config.EffectSettings.PositiveEffectSettings.Anti_Gravity);
             SetCheckboxValue(positiveEffectsObject.transform, "Athletic", MRSCore.Instance.config.EffectSettings.PositiveEffectSettings.Athletic);
             SetCheckboxValue(positiveEffectsObject.transform, "Bright Eyed", MRSCore.Instance.config.EffectSettings.PositiveEffectSettings.Bright_Eyed);
@@ -725,6 +736,11 @@ namespace MoreRealisticSleeping.PhoneApp
             if (arrestedEventObject.activeSelf)
             {
                 arrestedEventObject.SetActive(false);
+            }
+
+            if (murderedEventObject.activeSelf)
+            {
+                murderedEventObject.SetActive(false);
             }
 
             SetCheckboxValue(negativeEffectsObject.transform, "Balding", MRSCore.Instance.config.EffectSettings.NegativeEffectSettings.Balding);
@@ -803,6 +819,11 @@ namespace MoreRealisticSleeping.PhoneApp
                 arrestedEventObject.SetActive(false);
             }
 
+            if (murderedEventObject.activeSelf)
+            {
+                murderedEventObject.SetActive(false);
+            }
+
             // Lade die Daten aus der Config und aktualisiere die UI-Elemente
 
             SetCheckboxValue(generalSettingsObject.transform, "Forced Sleep", MRSCore.Instance.config.SleepSettings.Enable_Forced_Sleep);
@@ -863,10 +884,72 @@ namespace MoreRealisticSleeping.PhoneApp
                 negativeEffectsObject.SetActive(false);
             }
 
+            if (murderedEventObject.activeSelf)
+            {
+                murderedEventObject.SetActive(false);
+            }
+
             // Lade die Daten aus der Config und aktualisiere die UI-Elemente
             SetCheckboxValue(arrestedEventObject.transform, "Arrested Event", MRSCore.Instance.config.ArrestedEventSettings.Enable_GetArrested_Event);
             SetCheckboxValue(arrestedEventObject.transform, "Save Spaces", MRSCore.Instance.config.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces);
             SetInputFieldValue(arrestedEventObject.transform, "Event Probability", MRSCore.Instance.config.ArrestedEventSettings.GetArrested_Event_Probability);
+        }
+
+        void MurderedEventSectionClicked()
+        {
+            if (InstructionsTextObject.activeSelf)
+            {
+                InstructionsTextObject.SetActive(false);
+            }
+
+            if (!detailsTitleObject.activeSelf)
+            {
+                detailsTitleObject.SetActive(true);
+            }
+            detailsTitleObject.GetComponent<Text>().text = "Murdered Event Settings";
+
+            if (!detailsSubtitleObject.activeSelf)
+            {
+                detailsSubtitleObject.SetActive(true);
+            }
+            detailsSubtitleObject.GetComponent<Text>().text = "Choose the settings for the Get Murdered Event - when you get killed for sleeping in public.";
+
+            if (murderedEventObject == null)
+            {
+                MelonLogger.Error("murderedEventObject is null!");
+                return;
+            }
+
+            if (!murderedEventObject.activeSelf)
+            {
+                murderedEventObject.SetActive(true);
+            }
+
+            if (arrestedEventObject.activeSelf)
+            {
+                arrestedEventObject.SetActive(false);
+            }
+
+            if (generalSettingsObject.activeSelf)
+            {
+                generalSettingsObject.SetActive(false);
+            }
+
+            if (positiveEffectsObject.activeSelf)
+            {
+                positiveEffectsObject.SetActive(false);
+            }
+
+            if (negativeEffectsObject.activeSelf)
+            {
+                negativeEffectsObject.SetActive(false);
+            }
+
+            // Lade die Daten aus der Config und aktualisiere die UI-Elemente
+            SetCheckboxValue(murderedEventObject.transform, "Murdered Event", MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event);
+            SetCheckboxValue(murderedEventObject.transform, "Respawning", MRSCore.Instance.config.MurderedEventSettings.Allow_GetMurdered_Event_Respawning);
+            SetCheckboxValue(murderedEventObject.transform, "Save Spaces", MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces);
+            SetInputFieldValue(murderedEventObject.transform, "Event Probability", MRSCore.Instance.config.MurderedEventSettings.GetMurdered_Event_Probability);
         }
 
         void AddSeperatorLine(Transform parentTransform, float width = 455, float height = 2, string sColor = "Light Grey")
@@ -1025,6 +1108,11 @@ namespace MoreRealisticSleeping.PhoneApp
             else if (saveString == "ArrestedEvent")
             {
                 void FuncThatCallsFunc() => SaveArrestedEvent(buttonText);
+                saveButton.onClick.AddListener((UnityAction)FuncThatCallsFunc);
+            }
+            else if (saveString == "MurderedEvent")
+            {
+                void FuncThatCallsFunc() => SaveMurderedEvent(buttonText);
                 saveButton.onClick.AddListener((UnityAction)FuncThatCallsFunc);
             }
             else
@@ -2060,7 +2148,7 @@ namespace MoreRealisticSleeping.PhoneApp
 
         private void ToggleAllEffects(GameObject checkAllCheckbox, bool booleanValue, string sSection)
         {
-            MelonLogger.Msg($"ToggleAllEffects called with value: {booleanValue}");
+            //MelonLogger.Msg($"ToggleAllEffects called with value: {booleanValue}");
             Transform parentTransform = checkAllCheckbox.transform.parent;
             // Iteriere durch alle Kinder von negativeEffectsObject
             if (sSection == "PositiveEffects")
@@ -2101,7 +2189,7 @@ namespace MoreRealisticSleeping.PhoneApp
 
         private void ToggleLethalEffects(GameObject checkLethalCheckbox, bool booleanValue)
         {
-            MelonLogger.Msg($"ToggleLethalEffects called with value: {booleanValue}");
+            //MelonLogger.Msg($"ToggleLethalEffects called with value: {booleanValue}");
             Transform parentTransform = checkLethalCheckbox.transform.parent;
             // Iteriere durch alle Kinder
             foreach (string effectName in ConfigManager.GetLethalEffectNames())
@@ -2122,7 +2210,7 @@ namespace MoreRealisticSleeping.PhoneApp
 
         private void ToggleUselessEffects(GameObject checkUselessCheckbox, bool booleanValue, string sSection)
         {
-            MelonLogger.Msg($"ToggleAllEffects called with value: {booleanValue}");
+            // MelonLogger.Msg($"ToggleAllEffects called with value: {booleanValue}");
             Transform parentTransform = checkUselessCheckbox.transform.parent;
             // Iteriere durch alle Kinder von negativeEffectsObject
             if (sSection == "PositiveEffects")
@@ -2499,7 +2587,185 @@ namespace MoreRealisticSleeping.PhoneApp
             arrestedEventObject.SetActive(false);
         }
 
+        void AddUIForMurderedEvent(Transform parentTransform)
+        {
+            if (parentTransform == null)
+            {
+                MelonLogger.Error("Parent transform is null!");
+                return;
+            }
 
+            murderedEventObject = new GameObject("MurderedEvent");
+
+            VerticalLayoutGroup contentVerticalLayout = murderedEventObject.GetComponent<VerticalLayoutGroup>();
+            if (contentVerticalLayout == null)
+            {
+                contentVerticalLayout = murderedEventObject.gameObject.AddComponent<VerticalLayoutGroup>();
+            }
+            contentVerticalLayout.childAlignment = TextAnchor.UpperLeft;
+            contentVerticalLayout.spacing = 15f; // Abstand zwischen den Optionen 
+            contentVerticalLayout.childControlWidth = true;
+            contentVerticalLayout.childControlHeight = true;
+            contentVerticalLayout.childForceExpandWidth = false;
+            contentVerticalLayout.childForceExpandHeight = false;
+            // Add padding to the VerticalLayoutGroup using RectOffset
+            contentVerticalLayout.padding = new RectOffset(15, 15, 15, 15); // Left: 15, Right: 15, Top: 0, Bottom: 0
+
+            // Spacing from left
+            RectTransform murderedEventSettingsRect = murderedEventObject.GetComponent<RectTransform>();
+            if (murderedEventSettingsRect != null)
+            {
+                murderedEventSettingsRect.offsetMin = new Vector2(60, murderedEventSettingsRect.offsetMin.y + 60);
+                // Layout -> RectOffset -> padding
+            }
+
+            // Füge einen ContentSizeFitter hinzu
+            ContentSizeFitter contentSizeFitter = murderedEventObject.GetComponent<ContentSizeFitter>();
+            if (contentSizeFitter == null)
+            {
+                contentSizeFitter = murderedEventObject.AddComponent<ContentSizeFitter>();
+            }
+            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; // Passt die Höhe an den Inhalt an
+            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained; // Keine Anpassung der Breite
+            murderedEventObject.transform.SetParent(parentTransform, false);
+
+
+            // New UI Elements
+            GameObject enableMurderedEventCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, murderedEventObject.transform);
+            enableMurderedEventCheckbox.name = "Murdered Event Checkbox";
+            Transform enableMurderedEventCheckboxTextTransform = enableMurderedEventCheckbox.transform.Find("Text");
+            enableMurderedEventCheckboxTextTransform.GetComponent<Text>().text = "Enable Murdered Event";
+
+            GameObject enableRespawningCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, murderedEventObject.transform);
+            enableRespawningCheckbox.name = "Respawning Checkbox";
+            Transform enableRespawningCheckboxTextTransform = enableRespawningCheckbox.transform.Find("Text");
+            enableRespawningCheckboxTextTransform.GetComponent<Text>().text = "Allow Respawning";
+
+            GameObject enableSaveSpacesCheckbox = UnityEngine.Object.Instantiate(checkboxTemplate, murderedEventObject.transform);
+            enableSaveSpacesCheckbox.name = "Save Spaces Checkbox";
+            Transform enableSaveSpacesCheckboxTextTransform = enableSaveSpacesCheckbox.transform.Find("Text");
+            enableSaveSpacesCheckboxTextTransform.GetComponent<Text>().text = "Enable Save Spaces";
+
+            AddLabelInputPair("Event Probability", murderedEventObject.transform, "%");
+
+            AddSaveButton(murderedEventObject.transform, "MurderedEvent"); // Add the save button to the GeneralSettings object
+
+            if (parentTransform.FindChild("Space") != null)
+            {
+                parentTransform.FindChild("Space").SetAsLastSibling();
+            }
+            murderedEventObject.SetActive(false);
+        }
+
+        void SaveMurderedEvent(Text buttonText)
+        {
+            if (isSaveStillRunning)
+            {
+                MelonLogger.Msg("Save is still running. Please wait a few seconds before saving again.");
+                return;
+            }
+
+            if (murderedEventObject == null)
+            {
+                MelonLogger.Error("murderedEventObject is null! Cannot save settings.");
+                buttonText.text = "Save & Apply";
+                isSaveStillRunning = false;
+                return;
+            }
+
+            Transform murderedEventTransform = murderedEventObject.transform;
+            if (murderedEventTransform == null)
+            {
+                MelonLogger.Error("murderedEventObject transform is null! Cannot save settings.");
+                buttonText.text = "Save & Apply";
+                isSaveStillRunning = false;
+                return;
+            }
+
+            isSaveStillRunning = true;
+            buttonText.text = "Saving...";
+
+            // Deaktiviere den Save-Button
+            Button saveButton = buttonText.GetComponentInParent<Button>();
+            if (saveButton != null)
+            {
+                saveButton.interactable = false;
+            }
+            MRSCore.Instance.StopAllCoroutines();
+
+            // Greife auf die Eingabefelder zu und speichere die Werte
+            Transform eventProbabilityTransform = murderedEventTransform.Find("Event Probability Horizontal Container/Event Probability Input");
+
+            float currentEventProbability = MRSCore.Instance.config.MurderedEventSettings.GetMurdered_Event_Probability;
+
+            // Aktualisiere GetArrested_Event_Probability
+            if (eventProbabilityTransform != null)
+            {
+                InputField eventProbabilityInputField = eventProbabilityTransform.GetComponent<InputField>();
+                if (eventProbabilityInputField != null && float.TryParse(eventProbabilityInputField.text, out float parsedProbability))
+                {
+                    currentEventProbability = parsedProbability;
+                }
+            }
+            MRSCore.Instance.config.MurderedEventSettings.GetMurdered_Event_Probability = currentEventProbability;
+
+            // Checkboxen für arrested event speichern
+            bool isMurderedEventChecked = murderedEventObject.transform.Find("Murdered Event Checkbox").GetComponent<Toggle>().isOn;
+            MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event = isMurderedEventChecked;
+
+            bool isRespawningChecked = murderedEventObject.transform.Find("Respawning Checkbox").GetComponent<Toggle>().isOn;
+            MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces = isRespawningChecked;
+
+            bool isSaveSpacesChecked = murderedEventObject.transform.Find("Save Spaces Checkbox").GetComponent<Toggle>().isOn;
+            MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces = isSaveSpacesChecked;
+
+
+            // Speichere die aktualisierte Config
+            ConfigManager.Save(MRSCore.Instance.config);
+
+            // Zeige eine Benachrichtigung an
+            if (MRSCore.Instance.notificationsManager != null)
+            {
+                string subTitleString = "Config saved";
+                Sprite notificationSprite = null;
+                if (murderedEventSprite)
+                {
+                    notificationSprite = murderedEventSprite;
+                }
+                if (notificationSprite == null)
+                {
+                    string imagePath = Path.Combine(UIElementsFolder, "ArrestedEvent.png");
+                    if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                    {
+                        byte[] imageData = File.ReadAllBytes(imagePath);
+                        Texture2D texture = new Texture2D(2, 2);
+                        if (texture.LoadImage(imageData))
+                        {
+                            Sprite newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                            murderedEventSprite = newSprite;
+                            notificationSprite = murderedEventSprite;
+                        }
+                        else
+                        {
+                            MelonLogger.Error($"Failed to load image from path: {imagePath}");
+                        }
+                    }
+                }
+                MRSCore.Instance.notificationsManager.SendNotification("Murdered Event", subTitleString, notificationSprite, 5, true);
+            }
+
+            // Reaktiviere den Save-Button
+            if (saveButton != null)
+            {
+                saveButton.interactable = true;
+            }
+
+            if (buttonText != null)
+            {
+                buttonText.text = "Save & Apply";
+                isSaveStillRunning = false;
+            }
+        }
 
 
 
@@ -2508,7 +2774,6 @@ namespace MoreRealisticSleeping.PhoneApp
         private static readonly string AppIconFilePath = Path.Combine(ConfigFolder, "SleepingAppIcon.png");
         private static readonly string UIElementsFolder = Path.Combine(ConfigFolder, "UIElements");
         public bool _isSleepingAppLoaded = false;
-
         private bool isSaveStillRunning = false;
         private Transform sleepingAppViewportContentTransform;
         public GameObject DansHardwareTemplate;
@@ -2517,6 +2782,7 @@ namespace MoreRealisticSleeping.PhoneApp
         private GameObject positiveEffectsObject;
         private GameObject negativeEffectsObject;
         private GameObject arrestedEventObject;
+        private GameObject murderedEventObject;
         private GameObject checkboxTemplate;
         private GameObject viewPortContentSpaceTemplate;
         private GameObject detailsTitleObject;
@@ -2530,5 +2796,6 @@ namespace MoreRealisticSleeping.PhoneApp
         private Sprite positiveEffectsSprite;
         private Sprite negativeEffectsSprite;
         private Sprite arrestedEventSprite;
+        private Sprite murderedEventSprite;
     }
 }

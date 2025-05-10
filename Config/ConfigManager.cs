@@ -103,6 +103,11 @@ namespace MoreRealisticSleeping.Config
                     EnsureFieldExists((object)jsonObject.ArrestedEventSettings, "Enable_GetArrested_Event_SaveSpaces", configState.ArrestedEventSettings.Enable_GetArrested_Event_SaveSpaces);
                     EnsureFieldExists((object)jsonObject.ArrestedEventSettings, "GetArrested_Event_Probability", configState.ArrestedEventSettings.GetArrested_Event_Probability);
 
+                    EnsureFieldExists((object)jsonObject.MurderedEventSettings, "Enable_GetMurdered_Event", configState.MurderedEventSettings.Enable_GetMurdered_Event);
+                    EnsureFieldExists((object)jsonObject.MurderedEventSettings, "Allow_GetMurdered_Event_Respawning", configState.MurderedEventSettings.Allow_GetMurdered_Event_Respawning);
+                    EnsureFieldExists((object)jsonObject.MurderedEventSettings, "Enable_GetMurdered_Event_SaveSpaces", configState.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces);
+                    EnsureFieldExists((object)jsonObject.MurderedEventSettings, "GetMurdered_Event_Probability", configState.MurderedEventSettings.GetMurdered_Event_Probability);
+                    
                     if (isConfigUpdated)
                     {
                         MRSCore.Instance.StopAllCoroutines();
@@ -674,6 +679,42 @@ namespace MoreRealisticSleeping.Config
                 loadedConfigState.ArrestedEventSettings.GetArrested_Event_Probability = configState.ArrestedEventSettings.GetArrested_Event_Probability;
                 isConfigUpdated = true;
             }
+
+
+
+
+            // Check if Enable Get Murdered Event is a boolean
+            if (loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event != true && loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event != false)
+            {
+                MelonLogger.Warning("Invalid Enable_GetMurdered_Event in config. Adding default value (true).");
+                loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event = configState.MurderedEventSettings.Enable_GetMurdered_Event;
+                isConfigUpdated = true;
+            }
+
+            // Check if Enable_GetMurdered_Event_SaveSpaces is a boolean
+            if (loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces != true && loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces != false)
+            {
+                MelonLogger.Warning("Invalid Enable_GetMurdered_Event_SaveSpaces in config. Adding default value (true).");
+                loadedConfigState.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces = configState.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces;
+                isConfigUpdated = true;
+            }
+
+            // Check if Allow_GetMurdered_Event_Respawning is a boolean
+            if (loadedConfigState.MurderedEventSettings.Allow_GetMurdered_Event_Respawning != true && loadedConfigState.MurderedEventSettings.Allow_GetMurdered_Event_Respawning != false)
+            {
+                MelonLogger.Warning("Invalid Allow_GetMurdered_Event_Respawning in config. Adding default value (true).");
+                loadedConfigState.MurderedEventSettings.Allow_GetMurdered_Event_Respawning = configState.MurderedEventSettings.Allow_GetMurdered_Event_Respawning;
+                isConfigUpdated = true;
+            }
+
+            // Check if GetMurdered_Event_Probability is a float
+            if (loadedConfigState.MurderedEventSettings.GetMurdered_Event_Probability > 100f || loadedConfigState.MurderedEventSettings.GetMurdered_Event_Probability < 1f)
+            {
+                MelonLogger.Warning("Invalid GetMurdered_Event_Probability in config. Needs to be between 1 and 100. Adding default value (10%).");
+                loadedConfigState.MurderedEventSettings.GetMurdered_Event_Probability = configState.MurderedEventSettings.GetMurdered_Event_Probability;
+                isConfigUpdated = true;
+            }
+
         }
 
         public static bool GetNegativePropertyValue(ConfigState config, string propertyName)

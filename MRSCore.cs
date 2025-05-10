@@ -56,11 +56,11 @@ namespace MoreRealisticSleeping
         public Coroutine startAppCoroutinesAfterDelayCoroutine;
         public Coroutine initTimeManagerCoroutine;
         public Coroutine initLocalPlayerCoroutine;
+        public Coroutine murderPlayerCoroutine;
         public Coroutine onLocalPlayerInitializedCoroutine;
         public Player localPlayer { get; private set; }
-
+        private bool isFirstStart = true;
         public PlayerCrimeData localPlayerCrimeData { get; private set; }
-
         private string sSceneName = null;
 
 
@@ -75,6 +75,7 @@ namespace MoreRealisticSleeping
         {
             if (sceneName == "Main")
             {
+                isFirstStart = false;
                 sSceneName = sceneName.ToString();
                 MRSCore.Instance.config = Config.ConfigManager.Load();
                 MRSCore.Instance.propertyManager = new PropertyManager();
@@ -108,11 +109,12 @@ namespace MoreRealisticSleeping
                 }
 
             }
-            else if (sceneName.Equals("Menu", StringComparison.OrdinalIgnoreCase))
+            else if (sceneName.Equals("Menu", StringComparison.OrdinalIgnoreCase) && !isFirstStart)
             {
                 sSceneName = sceneName.ToString();
                 //LoggerInstance.Msg("Menu scene loaded. Stopping time monitoring.");
                 ResetAllVariables();
+                isFirstStart = false;
 
                 if (Il2CppScheduleOne.Networking.Lobby.Instance.IsHost)
                 {
@@ -160,6 +162,18 @@ namespace MoreRealisticSleeping
                 LoggerInstance.Msg("Stopped InitTimeManager coroutine.");
             }
 
+            if (propertyManager.removeEffectCoroutine != null)
+            {
+                MelonCoroutines.Stop(MRSCore.Instance.propertyManager.removeEffectCoroutine);
+                MRSCore.Instance.propertyManager.removeEffectCoroutine = null;
+            }
+
+            if (murderPlayerCoroutine != null)
+            {
+                MelonCoroutines.Stop(murderPlayerCoroutine);
+                MRSCore.Instance.murderPlayerCoroutine = null;
+            }
+
             StopAllCoroutines();
             MRSCore.Instance.config = null;
 
@@ -167,6 +181,8 @@ namespace MoreRealisticSleeping
             MRSCore.Instance.timeManager = null;
             MRSCore.Instance.sleepCanvas = null;
             MRSCore.Instance.dailySummary = null;
+            MRSCore.Instance.eventManager = null;
+            MRSCore.Instance.localPlayer = null;
             isFirstSleep = true;
 
             isForcedSleep = false;
@@ -179,6 +195,7 @@ namespace MoreRealisticSleeping
 
             isMonitorTimeForSleepRunning = false;
             isStartCooldownRunning = false;
+            MRSCore.sleepingApp._isSleepingAppLoaded = false;
 
             LoggerInstance.Msg("All variables reset.");
         }
@@ -218,7 +235,7 @@ namespace MoreRealisticSleeping
             // LoggerInstance.Msg("Current GetDateTime: " + timeManager.GetDateTime());
             // LoggerInstance.Msg("Current Day: " + timeManager.CurrentDay);
             // LoggerInstance.Msg("Current Hour: " + timeManager.CurrentTime); 
-            // UI / DailySummary / Container /
+            // UI / DailySummary / Container 
             // UI / LevelUp
             // Il2CppScheduleOne.UI.IPostSleepEvent
         }
@@ -235,9 +252,16 @@ namespace MoreRealisticSleeping
                 }
             }
 
+            /*
+
+            Todesnachricht hinzufügen -> Dann Respawn Button anzeigen verbessern
+            LevelUp Screen Fix?
+
+            */
+
             localPlayerCrimeData = localPlayer.CrimeData;
             MelonLogger.Msg($"Local player found: {localPlayer.name}");
-            initLocalPlayerCoroutine = null; // Setze die Coroutine-Referenz zurück
+            initLocalPlayerCoroutine = null;
         }
 
         public void StopAllCoroutines()
@@ -598,6 +622,33 @@ namespace MoreRealisticSleeping
                 {
                     LoggerInstance.Msg("Arrested Event is disabled in the config.");
                 }
+                if (MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event)
+                {
+                    if (localPlayer != null && localPlayer.gameObject != null)
+                    {
+                        // Wahrscheinlichkeit für ermordet zu werden prüfen
+                        var probability = MRSCore.Instance.config.MurderedEventSettings.GetMurdered_Event_Probability / 100f;
+                        var random = new System.Random();
+                        if (random.NextDouble() <= probability)
+                        {
+                            if (MRSCore.Instance.config.MurderedEventSettings.Enable_GetMurdered_Event_SaveSpaces && eventManager.IsPlayerNearSaveProperty())
+                            {
+                                LoggerInstance.Msg("Not murdered due to save space proximity.");
+                                return;
+                            }
+                            else
+                            {
+                                murderPlayerCoroutine = (Coroutine)MelonCoroutines.Start(eventManager.MurderPlayer());
+
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    LoggerInstance.Msg("Murdered Event is disabled in the config.");
+                }
             }
             else //Spieler ist frühzeitig schlafen gegangen || TODO: Uhrzeit check, um festzulegen, wann früh ist
             {
@@ -666,6 +717,8 @@ namespace MoreRealisticSleeping
             sleepingApp.AddEntryFromTemplate("NegativeEffectsSection", "Negative Effects", "~Choose negative Forced-Sleep-Effects~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "NegativeEffects.png"));
 
             sleepingApp.AddEntryFromTemplate("ArrestedEventSection", "Arrested Event", "~Adjust settings for the Arrested Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "ArrestedEvent.png"));
+
+            sleepingApp.AddEntryFromTemplate("MurderedEventSection", "Murdered Event", "~Adjust settings for the Murdered Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "ArrestedEvent.png"));
 
         }
 

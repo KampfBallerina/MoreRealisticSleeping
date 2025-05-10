@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Il2CppScheduleOne.Law;
+using Il2CppScheduleOne.PlayerScripts;
+using Il2CppScheduleOne.UI;
 using MelonLoader;
 using UnityEngine;
 
@@ -28,8 +30,10 @@ VIOLATING_CURFEW_TIME: 100
 
         */
 
+
     public class EventManager
     {
+        private DeathScreen cachedDeathScreen;
         private class SaveProperty
         {
             public Vector3 Position { get; }
@@ -39,6 +43,33 @@ VIOLATING_CURFEW_TIME: 100
             {
                 Position = position;
                 Radius = radius;
+            }
+        }
+
+        public IEnumerator MurderPlayer()
+        {
+            if (MRSCore.Instance.localPlayer != null)
+            {
+                MRSCore.Instance.localPlayer.Health.TakeDamage(100f);
+                DeathScreen deathScreen = UnityEngine.Object.FindObjectOfType<DeathScreen>();
+                if (deathScreen != null)
+                {
+                    cachedDeathScreen = deathScreen;
+                    MelonLogger.Msg("Death screen found.");
+                    while (!deathScreen.Container.gameObject.activeSelf)
+                    {
+                        yield return new WaitForSeconds(1f); // Wait until the container becomes visible
+                    }
+
+                    if (MRSCore.Instance.config.MurderedEventSettings.Allow_GetMurdered_Event_Respawning)
+                    {
+                        deathScreen.RespawnClicked();
+                    }
+                }
+                else
+                {
+                    MelonLogger.Warning("Death screen is not found.");
+                }
             }
         }
 
@@ -125,7 +156,7 @@ VIOLATING_CURFEW_TIME: 100
         private Dictionary<string, SaveProperty> SaveProperties = new Dictionary<string, SaveProperty>
         {
             { "Laundromat", new SaveProperty(new Vector3(-28.689548f, 1.5649998f, 25.043943f), 6f) },
-            { "Post Office", new SaveProperty(new Vector3(47.377815f, 1.1149997f, 0.7196727f), 8f) },
+            { "Post Office", new SaveProperty(new Vector3(47.377815f, 1.1149997f, 0.7196727f), 7f) },
             { "Car Wash", new SaveProperty(new Vector3(-4.6848783f, 1.215f, -18.462233f), 5f) },
             { "Taco Ticklers", new SaveProperty(new Vector3(-30.715487f, 1.065f, 73.0847f), 12f) },
             { "RV", new SaveProperty(new Vector3(13.743962f, 2.040004f, -83.97922f), 5f) },

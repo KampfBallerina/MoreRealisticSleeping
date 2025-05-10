@@ -8,6 +8,7 @@ namespace MoreRealisticSleeping.Config
         public SleepSettings SleepSettings { get; set; } = new SleepSettings();
         public EffectSettings EffectSettings { get; set; } = new EffectSettings();
         public ArrestedEventSettings ArrestedEventSettings { get; set; } = new ArrestedEventSettings();
+        public MurderedEventSettings MurderedEventSettings { get; set; } = new MurderedEventSettings();
 
 
     }
@@ -91,5 +92,14 @@ namespace MoreRealisticSleeping.Config
         public bool Enable_GetArrested_Event_SaveSpaces = true; // Enable save spaces where no Events get triggered
         [JsonConverter(typeof(CleanFloatConverter))]
         public float GetArrested_Event_Probability = 10f; // Probability of getting arrested
+    }
+
+    public class MurderedEventSettings
+    {
+        public bool Enable_GetMurdered_Event = true; // Allow getting murdered
+        public bool Allow_GetMurdered_Event_Respawning = true; // Alles to respawn after getting murdered instead of loading a save
+        public bool Enable_GetMurdered_Event_SaveSpaces = true; // Enable save spaces where no Events get triggered
+        [JsonConverter(typeof(CleanFloatConverter))]
+        public float GetMurdered_Event_Probability = 5f; // Probability of getting arrested
     }
 }

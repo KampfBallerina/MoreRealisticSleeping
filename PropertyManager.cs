@@ -142,7 +142,7 @@ public class PropertyManager
                 MRSCore.Instance.notificationsManager.SendNotification("Negative Effect", $"{displayName}", sprite, duration, true);
             }
 
-            MelonCoroutines.Start(RemovePropertyFromPlayerAfterTime(player, duration, appliedEffect));
+            removeEffectCoroutine = (Coroutine)MelonCoroutines.Start(RemovePropertyFromPlayerAfterTime(player, duration, appliedEffect));
         }
         catch (Exception ex)
         {
@@ -661,6 +661,7 @@ public class PropertyManager
     private static readonly string EffectImagesFolder = Path.Combine(ConfigFolder, "EffectImages");
     private static readonly string FilePath = Path.Combine(ConfigFolder, "SleepingAppIcon.png");
     public static Sprite appIconSprite;
+    public Coroutine removeEffectCoroutine = null;
 
 
 }
