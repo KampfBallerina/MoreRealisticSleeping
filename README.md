@@ -13,8 +13,9 @@
     It might not work for Joining Players (please test this yourself)
 
 
-## 🆕 Whats new in V1.0.2?
+## 🆕 Whats new in V1.0.3?
 - **Fixed Menu Loading Bug**
+    Error when loading into the game, then back to the menu is now fixed.
 - **Feature: Murdered Event**
     There is now a configurable probability to get murdered, when not sleeping in one of your properties.
     Properties are currently all Private Properties and Business Properties. This Event will not get triggered as long as you're in the close proximity of these buildings. (You can also turn this of if preferred)
@@ -23,8 +24,15 @@
 - **Feature: Arrested Event**
     There is now a configurable probability to get arrested, when not sleeping in one of your properties.
     Properties are currently all Private Properties and Business Properties. This Event will not get triggered as long as you're in the close proximity of these buildings. (You can also turn this of if preferred)
-    If you get arrested, your product will be taken away and you have to pay for your crimes. (There is many synonyms for "Public Sleeping" in the Mod) 
+    If you get arrested, your product will be taken away and you have to pay for your crimes. (There is many synonyms for "Public Sleeping" in the Mod)
+- **Config Changes**
+    Adjusted the Default Config accordingly
 
+![Murdered Event](https://github.com/user-attachments/assets/67a83d73-6b28-4ed0-931a-8ec20bff2f72)
+
+![Arrested Event](https://github.com/user-attachments/assets/0c9bc414-60f8-419a-8366-7cbd3d934b59)
+
+![Arrested Crime Note](https://github.com/user-attachments/assets/3c1ddc06-644a-4eba-b654-f6bd50ea0f20)
 
 ## 🚀 Planned Features
 - **Custom Sleep Times:**  
