@@ -231,13 +231,14 @@ namespace MoreRealisticSleeping
                 }
                 yield return new WaitForSeconds(2f);
             }
-
-            // LoggerInstance.Msg("Current GetDateTime: " + timeManager.GetDateTime());
-            // LoggerInstance.Msg("Current Day: " + timeManager.CurrentDay);
-            // LoggerInstance.Msg("Current Hour: " + timeManager.CurrentTime); 
+            
             // UI / DailySummary / Container 
             // UI / LevelUp
             // Il2CppScheduleOne.UI.IPostSleepEvent
+             /*
+            Todesnachricht hinzufügen -> Dann Respawn Button anzeigen verbessern
+            LevelUp Screen Fix?
+            */
         }
 
         private IEnumerator InitializeLocalPlayer()
@@ -251,13 +252,6 @@ namespace MoreRealisticSleeping
                     yield return new WaitForSeconds(0.5f);
                 }
             }
-
-            /*
-
-            Todesnachricht hinzufügen -> Dann Respawn Button anzeigen verbessern
-            LevelUp Screen Fix?
-
-            */
 
             localPlayerCrimeData = localPlayer.CrimeData;
             MelonLogger.Msg($"Local player found: {localPlayer.name}");
@@ -718,7 +712,7 @@ namespace MoreRealisticSleeping
 
             sleepingApp.AddEntryFromTemplate("ArrestedEventSection", "Arrested Event", "~Adjust settings for the Arrested Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "ArrestedEvent.png"));
 
-            sleepingApp.AddEntryFromTemplate("MurderedEventSection", "Murdered Event", "~Adjust settings for the Murdered Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "ArrestedEvent.png"));
+            sleepingApp.AddEntryFromTemplate("MurderedEventSection", "Murdered Event", "~Adjust settings for the Murdered Event~", null, ColorUtil.GetColor("Cyan"), Path.Combine(UIElementsFolder, "MurderedEvent.png"));
 
         }
 

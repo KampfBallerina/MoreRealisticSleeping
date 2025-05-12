@@ -2734,7 +2734,7 @@ namespace MoreRealisticSleeping.PhoneApp
                 }
                 if (notificationSprite == null)
                 {
-                    string imagePath = Path.Combine(UIElementsFolder, "ArrestedEvent.png");
+                    string imagePath = Path.Combine(UIElementsFolder, "MurderedEvent.png");
                     if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
                     {
                         byte[] imageData = File.ReadAllBytes(imagePath);
