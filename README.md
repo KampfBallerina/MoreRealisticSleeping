@@ -16,14 +16,16 @@
 
 
 ## 🆕 Whats new in V1.0.2?
-- **Delay after 4:00 AM:**
-    Allow to add a new configurable delay, starting at 4:00 AM before the Forced Sleep will be triggered
-- **Automatic Sleep Animation Skipping (Multiplayer usage):**
-    Added a new Checkbox to enable the automatic skipping
-    This can be used to automatically press the "Continue"-Buttons when the Sleep Canvas appears
-    This leads to no more "Waiting for host.." since the host will automatically continue when enabled
-    
-    ![General Settings](https://github.com/user-attachments/assets/d8c150df-53a7-48c1-8bc6-d31124b8e4db)
+- **Fixed Menu Loading Bug**
+- **Feature: Murdered Event**
+    There is now a configurable probability to get murdered, when not sleeping in one of your properties.
+    Properties are currently all Private Properties and Business Properties. This Event will not get triggered as long as you're in the close proximity of these buildings. (You can also turn this of if preferred)
+    You can also configure if you will respawn after this event got triggered or if you want to keep it as standard (in Singleplayer: loading last save).
+    If you're respawning you will have to pay the hospital bill.
+- **Feature: Arrested Event**
+    There is now a configurable probability to get arrested, when not sleeping in one of your properties.
+    Properties are currently all Private Properties and Business Properties. This Event will not get triggered as long as you're in the close proximity of these buildings. (You can also turn this of if preferred)
+    If you get arrested, your product will be taken away and you have to pay for your crimes. (There is many synonyms for "Public Sleeping" in the Mod) 
 
 
 ## 🚀 Planned Features
