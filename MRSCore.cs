@@ -164,43 +164,46 @@ namespace MoreRealisticSleeping
                 LoggerInstance.Msg("Stopped InitTimeManager coroutine.");
             }
 
-            if (propertyManager.removeEffectCoroutine != null)
+            if (propertyManager != null && propertyManager.removeEffectCoroutine != null)
             {
-                MelonCoroutines.Stop(MRSCore.Instance.propertyManager.removeEffectCoroutine);
-                MRSCore.Instance.propertyManager.removeEffectCoroutine = null;
+                MelonCoroutines.Stop(propertyManager.removeEffectCoroutine);
+                propertyManager.removeEffectCoroutine = null;
+                LoggerInstance.Msg("Stopped RemoveEffect coroutine.");
             }
 
             if (murderPlayerCoroutine != null)
             {
                 MelonCoroutines.Stop(murderPlayerCoroutine);
-                MRSCore.Instance.murderPlayerCoroutine = null;
+                murderPlayerCoroutine = null;
+                LoggerInstance.Msg("Stopped MurderPlayer coroutine.");
             }
 
             StopAllCoroutines();
             MRSCore.Instance.config = null;
 
             isLegitVersion = false;
-            MRSCore.Instance.timeManager = null;
-            MRSCore.Instance.sleepCanvas = null;
-            MRSCore.Instance.dailySummary = null;
-            MRSCore.Instance.eventManager = null;
-            MRSCore.Instance.localPlayer = null;
+            timeManager = null;
+            sleepCanvas = null;
+            dailySummary = null;
+            eventManager = null;
+            localPlayer = null;
             isFirstSleep = true;
 
             isForcedSleep = false;
             canTriggerSleep = true;
             isCooldownActive = false;
 
-            MRSCore.Instance.propertyManager = null;
-            MRSCore.Instance.notificationsManager = null;
-            MRSCore.Instance.moneyManager = null;
+            propertyManager = null;
+            notificationsManager = null;
+            moneyManager = null;
 
             isMonitorTimeForSleepRunning = false;
             isStartCooldownRunning = false;
-            MRSCore.sleepingApp._isSleepingAppLoaded = false;
+            sleepingApp._isSleepingAppLoaded = false;
 
             LoggerInstance.Msg("All variables reset.");
         }
+
         public IEnumerator InitTimeManager()
         {
             while (timeManager == null)

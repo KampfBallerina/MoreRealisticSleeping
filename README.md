@@ -8,8 +8,6 @@
 ## ⚠️ Known Incompatibilities / Issues
 - **Incompatibility with other mods modifying the sleep system:**  
     Mods that alter the sleep mechanics or the `SleepCanvas` may conflict with `MoreRealisticSleeping`.
-- **Incompatibility with most translation mods:**  
-    Mods that replace some of the names in the apps `Deliveries App` or `Products App`  may conflict.
 - **Multiplayer Effects:**
     The effects are most likely client-side, meaning that it won't be visible in Mutliplayer
     It might not work for Joining Players (please test this yourself)
