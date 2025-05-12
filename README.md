@@ -28,10 +28,7 @@
 
 ## 🚀 Planned Features
 - **Custom Sleep Times:**  
-  Allow players to set forced sleep time and wake-up times.
-- **Probability to wake up at the hospital or police station:**  
-  Introduce more variations for aftersleep events.
-  Paying fees when you get caught or injured 
+  Allow players to set forced sleep time and wake-up times
 - **Expanded Effect Settings:**  
   Add more granular control over positive and negative effects, including intensity etc.
 
