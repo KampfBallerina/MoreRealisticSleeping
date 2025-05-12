@@ -19,9 +19,11 @@ namespace MoreRealisticSleeping
 
     /*
     ClampWakeTime(int time) -> 0-2400 Ist die Weckzeit
+    TODOS: Notification for warning/reminder ~ 1h bzw 60 sec before sleep
+            be aware of delay
+    TODOS: Adjust Wakeup time automatically to be always 8 hrs (late bed = late wake)
+    
     */
-
-    // UI/HUD/UnreadMessagePrompt
 
     // 1600 = 16:00 Uhr
     public class MRSCore : MelonMod
